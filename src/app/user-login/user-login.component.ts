@@ -12,6 +12,11 @@ export class UserLoginComponent {
   
   constructor(private authServ: UserAuthService) {}
 
+  //On successful login, go to /dashboard as User
+  //Also just make login page look like dashboard page, shits way cleaner
+  //Just make a new component for registration, use login form html but with a 
+  //a confirm password field added
+
   onAttemptedLogin(u:string, h:string) {
       if (u && h) {
         alert(`login: username is ${u}, password is ${h}`)
@@ -19,12 +24,4 @@ export class UserLoginComponent {
         this.authServ.onLoginOrRegister(myUser, true);
       }
     }
-
-  onAttemptedRegister(u:string, h:string) {
-    if (u && h) {
-      alert(`registration: username is ${u}, password is ${h}`)
-      const myUser = new User(u, h);
-      this.authServ.onLoginOrRegister(myUser, true);
-    }
-  }
 }

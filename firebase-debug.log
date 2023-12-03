@@ -1,0 +1,36 @@
+[debug] [2023-12-03T20:13:39.643Z] ----------------------------------------------------------------------
+[debug] [2023-12-03T20:13:39.647Z] Command:       /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] [2023-12-03T20:13:39.648Z] CLI Version:   12.9.1
+[debug] [2023-12-03T20:13:39.648Z] Platform:      darwin
+[debug] [2023-12-03T20:13:39.648Z] Node Version:  v20.10.0
+[debug] [2023-12-03T20:13:39.648Z] Time:          Sun Dec 03 2023 15:13:39 GMT-0500 (Eastern Standard Time)
+[debug] [2023-12-03T20:13:39.648Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-12-03T20:13:39.835Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-12-03T20:13:39.835Z] > authorizing via signed-in user (jrosey77@gmail.com)
+[debug] [2023-12-03T20:13:39.836Z] [iam] checking project cipherchat-ec110 for permissions ["firebase.projects.get"]
+[debug] [2023-12-03T20:13:39.838Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/cipherchat-ec110:testIamPermissions [none]
+[debug] [2023-12-03T20:13:39.838Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/cipherchat-ec110:testIamPermissions x-goog-quota-user=projects/cipherchat-ec110
+[debug] [2023-12-03T20:13:39.839Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cipherchat-ec110:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2023-12-03T20:13:40.137Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/cipherchat-ec110:testIamPermissions 200
+[debug] [2023-12-03T20:13:40.137Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cipherchat-ec110:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2023-12-03T20:13:40.138Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110 [none]
+[debug] [2023-12-03T20:13:40.580Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110 200
+[debug] [2023-12-03T20:13:40.580Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110 {"projectId":"cipherchat-ec110","projectNumber":"794202721899","displayName":"cipherchat","name":"projects/cipherchat-ec110","resources":{"hostingSite":"cipherchat-ec110"},"state":"ACTIVE","etag":"1_a2978efe-6695-4854-9a8b-d068dafda928"}
+[info] 
+[info] === Serving from '/Users/jacobrosey/Desktop/angular-projects/instant-messenger'...
+[info] 
+[debug] [2023-12-03T20:13:40.586Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/cipherchat-ec110/sites 
+[debug] [2023-12-03T20:13:41.186Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/cipherchat-ec110/sites 200
+[debug] [2023-12-03T20:13:41.186Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/cipherchat-ec110/sites {"sites":[{"name":"projects/cipherchat-ec110/sites/cipherchat-ec110","defaultUrl":"https://cipherchat-ec110.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2023-12-03T20:13:41.186Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110/webApps/-/config [none]
+[debug] [2023-12-03T20:13:41.459Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110/webApps/-/config 200
+[debug] [2023-12-03T20:13:41.460Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110/webApps/-/config {"projectId":"cipherchat-ec110","storageBucket":"cipherchat-ec110.appspot.com","apiKey":"AIzaSyBkBAZhma4e-dpFFAoj6LNsdZoZaK4UpF8","authDomain":"cipherchat-ec110.firebaseapp.com","messagingSenderId":"794202721899"}
+[debug] [2023-12-03T20:13:41.484Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110 [none]
+[debug] [2023-12-03T20:13:41.668Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110 200
+[debug] [2023-12-03T20:13:41.668Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/cipherchat-ec110 {"projectId":"cipherchat-ec110","projectNumber":"794202721899","displayName":"cipherchat","name":"projects/cipherchat-ec110","resources":{"hostingSite":"cipherchat-ec110"},"state":"ACTIVE","etag":"1_a2978efe-6695-4854-9a8b-d068dafda928"}
+[info] i  hosting[cipherchat-ec110]: Serving hosting files from: src {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1msrc\u001b[22m"}}
+[info] ✔  hosting[cipherchat-ec110]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
+[info] i  hosting: ::1 - - [03/Dec/2023:20:13:48 +0000] "GET / HTTP/1.1" 200 408 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [03/Dec/2023:20:13:48 +0000] \"GET / HTTP/1.1\" 200 408 \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [03/Dec/2023:20:13:48 +0000] "GET /favicon.ico HTTP/1.1" 200 948 "http://localhost:5000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [03/Dec/2023:20:13:48 +0000] \"GET /favicon.ico HTTP/1.1\" 200 948 \"http://localhost:5000/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [03/Dec/2023:20:14:52 +0000] "GET / HTTP/1.1" 200 408 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [03/Dec/2023:20:14:52 +0000] \"GET / HTTP/1.1\" 200 408 \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36\""}}

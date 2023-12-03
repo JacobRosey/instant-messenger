@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { UserAuthService } from './userauth.service';
+//import {initializeApp} from 'firebase/app'
+
 
 @Component({
   selector: 'app-root',
