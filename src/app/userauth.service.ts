@@ -1,13 +1,13 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { User } from "./user.model"; 
 import { Router } from "@angular/router";
-import { Firestore } from "@angular/fire/firestore";
+//import { Firestore } from "@angular/fire/firestore";
 
 @Injectable()
 export class UserAuthService {
     loginAttempted = new EventEmitter<User>();
 
-    constructor(private router: Router, private fs: Firestore) {}
+    constructor(private router: Router, /*private fs: Firestore*/) {}
 
     onLoginOrRegister(u: User, isLogin: boolean) {
         console.log(u, isLogin);
