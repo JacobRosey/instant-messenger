@@ -12,8 +12,9 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { InboxComponent } from './dashboard/inbox/inbox.component';
 
-// import {provideFirebaseApp, getApp, initializeApp} from '@angular/fire/app';
-// import {getFirestore, provideFirestore} from '@angular/fire/firestore';
+import {provideFirebaseApp, getApp, initializeApp} from '@angular/fire/app';
+import {getFirestore, provideFirestore} from '@angular/fire/firestore';
+import { FirebaseService } from './firebase-service';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBkBAZhma4e-dpFFAoj6LNsdZoZaK4UpF8",
@@ -39,10 +40,10 @@ const firebaseConfig = {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    //provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    //provideFirestore(() => getFirestore()),
+    provideFirebaseApp(() => initializeApp(firebaseConfig)),
+    provideFirestore(() => getFirestore()),
   ],
-  providers: [UserAuthService],
+  providers: [UserAuthService, FirebaseService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

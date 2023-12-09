@@ -14,12 +14,17 @@ export class UserRegisterComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onAttemptedRegistration(u:string, h:string) {
-    if (u && h) {
-      alert(`registration: username is ${u}, password is ${h}`)
+  //username, password, confirm password
+  onAttemptedRegistration(u:string, h:string, c:string) {
+    if ((u && h)&&(h === c)) {
+      //Should just import an array of all restricted keywords and check for those
+      //With a bigger array I might want to figure out how to search the array faster 
+      const forbiddenUsernames : Array<string> = ['null', 'undefined', 'string', 'number', 'boolean'];
+      if(forbiddenUsernames.includes(u)){return alert("Stop trying to break stuff");}
+
       const myUser = new User(u, h);
-      this.authServ.onLoginOrRegister(myUser, false);
-    }
+      this.authServ.onRegister(myUser);
+    } else {alert("You forgot a field or your password does not match")}
   }
 
 }

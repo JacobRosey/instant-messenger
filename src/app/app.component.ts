@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { UserAuthService } from './userauth.service';
-//import {initializeApp} from 'firebase/app'
+import { FirebaseService } from './firebase-service';
 
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  providers: [UserAuthService]
+  providers: [UserAuthService, FirebaseService]
 })
 export class AppComponent {
-  title = 'instant-messenger';
+  title = 'cipherchat';
 }
