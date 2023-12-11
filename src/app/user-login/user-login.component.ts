@@ -8,6 +8,7 @@ import { User } from '../user.model';
   styleUrls: ['./user-login.component.scss'],
   providers: [UserAuthService]
 })
+
 export class UserLoginComponent {
   
   constructor(private authServ: UserAuthService) {}

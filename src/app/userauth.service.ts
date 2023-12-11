@@ -10,23 +10,31 @@ export class UserAuthService {
     constructor(private router: Router, private fs: FirebaseService) {}
 
     async onLogin(u: User) {
-        //something something fs to query database if user exists
-        const currentUser = await this.fs.getUserData(u); 
-        console.log(currentUser)
-
-        
-        //Move this to somewhere after login is validated
-        this.router.navigateByUrl('/dashboard')
+        //First check if username exists in db
+        const userExists = await this.fs.doesUserExist(u, true); 
+    
+        if(userExists){
+            const isValidated = await this.fs.validateLogin(u);
+            alert(isValidated ? "Login Successful" : "Login failed");
+            this.router.navigateByUrl(isValidated ? '/dashboard' : '/login')
+        } else{
+            alert("User not found")
+        }
     }
 
     async onRegister(u: User) {
         //Query db to see if username is taken
-        const userNameTaken = await this.fs.getUserData(u); 
-        alert(!userNameTaken ? `${u.username} is available!` : `${u.username} is not available.`)
-
-        
-        //Move this to somewhere after login is validated
-        this.router.navigateByUrl('/dashboard')
+        const userNameTaken = await this.fs.doesUserExist(u, false); 
+        if(!userNameTaken){
+            try{
+                await this.fs.addNewUser(u);
+                alert("Registration successful!");
+                this.router.navigateByUrl('/login');
+            }
+            catch(error){console.error(error)}
+        } else {
+            alert(`${u.username} is not available :L`);
+        }
     }
 
 }

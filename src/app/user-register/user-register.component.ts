@@ -19,7 +19,8 @@ export class UserRegisterComponent implements OnInit {
     if ((u && h)&&(h === c)) {
       //Should just import an array of all restricted keywords and check for those
       //With a bigger array I might want to figure out how to search the array faster 
-      const forbiddenUsernames : Array<string> = ['null', 'undefined', 'string', 'number', 'boolean'];
+      //Not sure which of these could actually cause a problem
+      const forbiddenUsernames : Array<string> = ['admin', 'sudo', 'null', 'undefined', 'string', 'number', 'boolean'];
       if(forbiddenUsernames.includes(u)){return alert("Stop trying to break stuff");}
 
       const myUser = new User(u, h);
