@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { User } from "./user.model"; 
 import { Router } from "@angular/router";
-import { FirebaseService } from "./firebase-service";
+import { FirebaseService } from "./firebase.service";
 
 @Injectable()
 export class UserAuthService {
@@ -11,11 +11,11 @@ export class UserAuthService {
 
     async onLogin(u: User) {
         //First check if username exists in db
-        const userExists = await this.fs.doesUserExist(u, true); 
+        const userExists = await this.fs.doesUserExist(u); 
     
         if(userExists){
             const isValidated = await this.fs.validateLogin(u);
-            alert(isValidated ? "Login Successful" : "Login failed");
+            alert(isValidated ? "Login Successful" : "Invalid password");
             this.router.navigateByUrl(isValidated ? '/dashboard' : '/login')
         } else{
             alert("User not found")
@@ -24,7 +24,7 @@ export class UserAuthService {
 
     async onRegister(u: User) {
         //Query db to see if username is taken
-        const userNameTaken = await this.fs.doesUserExist(u, false); 
+        const userNameTaken = await this.fs.doesUserExist(u); 
         if(!userNameTaken){
             try{
                 await this.fs.addNewUser(u);

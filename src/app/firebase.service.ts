@@ -1,17 +1,22 @@
 import { Firestore, collection, query, where, getDocs, addDoc } from "@angular/fire/firestore";
 import { User } from "./user.model";
 import { Injectable } from "@angular/core";
+import { UserData } from "./dashboard/userdata.interface";
 
 @Injectable()
 export class FirebaseService {
     constructor(private db: Firestore){}
 
     userData = collection(this.db, 'users');
-    userExists: Boolean = false;
-    isValidated: Boolean = false;
+    userExists: boolean = false;
+    isValidated: boolean = false;
+    currentUserName: string = "null";
+    
+    //Add properties to interface as needed
+    currentUserData: UserData = { name: '', friends: 0, messages: 0 };
 
     //Since this is a service I can't destroy it to reinitialize (like you can with a component),
-    //So this is good enough for now. Add arguments if that becomes necessary
+    //So this is good enough for now. Can add arguments if that becomes necessary
     resetState() {
         this.isValidated = false;
         this.userExists = false;
@@ -19,7 +24,7 @@ export class FirebaseService {
 
     //This function is used for onRegistration to see if a username is available
     //and by onLogin to see if the username exists
-    async doesUserExist(user: User, isLogin: Boolean) {
+    async doesUserExist(user: User) {
         this.resetState();
         const userQuery = query(this.userData, where('name', '==', user.username)); 
         try {
@@ -29,9 +34,6 @@ export class FirebaseService {
                 const usernameMatch = user.username.toLowerCase() === u.data()['name'].toLowerCase();
                 if (usernameMatch) {
                     this.userExists = true;
-                    if (isLogin) {
-                        this.validateLogin(user);
-                    } 
                     break;
                 }
             }
@@ -53,20 +55,34 @@ export class FirebaseService {
     }
 
     async validateLogin(user: User){
-        const hashQuery = query(this.userData, where('name', '==', user.username), where('hash', '==', user.hash));
+        const hashQuery = query(this.userData, where('name', '==', user.username));
         const querySnapshot = await getDocs(hashQuery);
         querySnapshot.forEach((u) => {
             if(user.username.toLowerCase() == u.data()['name'].toLowerCase() && user.hash == u.data()['hash']){
                 this.isValidated = true;
+                this.currentUserName = user.username;
             } else this.isValidated = false;
-        }) 
+        })
         return this.isValidated;
     }
 
-    /* Get relevant data here: friends, messages, etc.
-    async getUserData(u: User){
+    //Don't just keep calling this when routing to inbox, my friends etc. 
+    //Instead share current user data across those components
+    async getUserData(){
+        const userQuery = query(this.userData, where('name', '==', this.currentUserName)); 
 
+        try {
+            const querySnapshot = await getDocs(userQuery);
+            for (const u of querySnapshot.docs) {
+                this.currentUserData = {
+                    name: this.currentUserName,
+                    friends: u.data()['friends'],
+                    messages: u.data()['messages']
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+        return this.currentUserData;
     }
-    */
-
 }
