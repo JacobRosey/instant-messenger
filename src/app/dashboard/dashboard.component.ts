@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserDataService } from './user.data.service';
 import { UserData } from './userdata.interface';
+import { FirebaseService } from '../firebase.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,10 +11,10 @@ import { UserData } from './userdata.interface';
 export class DashboardComponent implements OnInit {
 
   userData: UserData = {name: '', friends: 0, messages: 0 };
-  hasMessages: boolean = false;
   isLoading: boolean = true;
+  hasMessages: boolean = false;
 
-  constructor(private uds: UserDataService) { }
+  constructor(private fs: FirebaseService) {}
 
   ngOnInit() {
     this.getUserData();
@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit {
 
   async getUserData(){
     try{
-      this.userData = await this.uds.getUserData();
+      this.userData = await this.fs.getStoredUserData();
     } catch(err){console.error(err)} finally {
       this.isLoading = false;
     };

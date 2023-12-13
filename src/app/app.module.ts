@@ -15,7 +15,7 @@ import { InboxComponent } from './dashboard/inbox/inbox.component';
 import {provideFirebaseApp, getApp, initializeApp} from '@angular/fire/app';
 import {getFirestore, provideFirestore} from '@angular/fire/firestore';
 import { FirebaseService } from './firebase.service';
-import { UserDataService } from './dashboard/user.data.service';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyBkBAZhma4e-dpFFAoj6LNsdZoZaK4UpF8",
@@ -44,7 +44,7 @@ const firebaseConfig = {
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideFirestore(() => getFirestore()),
   ],
-  providers: [UserAuthService, FirebaseService, UserDataService],
+  providers: [UserAuthService, FirebaseService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

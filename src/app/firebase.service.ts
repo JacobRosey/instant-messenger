@@ -2,10 +2,11 @@ import { Firestore, collection, query, where, getDocs, addDoc } from "@angular/f
 import { User } from "./user.model";
 import { Injectable } from "@angular/core";
 import { UserData } from "./dashboard/userdata.interface";
+import { CookieService } from "ngx-cookie-service";
 
 @Injectable()
 export class FirebaseService {
-    constructor(private db: Firestore){}
+    constructor(private db: Firestore, private cookies: CookieService){}
 
     userData = collection(this.db, 'users');
     userExists: boolean = false;
@@ -79,10 +80,22 @@ export class FirebaseService {
                     friends: u.data()['friends'],
                     messages: u.data()['messages']
                 }
+                this.cookies.set('storedUserData', JSON.stringify(this.currentUserData));
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
         return this.currentUserData;
     }
+
+    async getStoredUserData(){
+        const storedUserData = this.cookies.get('storedUserData');
+        if (storedUserData) {
+          this.currentUserData = JSON.parse(storedUserData);
+        } else {
+          console.log("error")
+        }
+        console.log(`returning ${JSON.stringify(this.currentUserData)}`)
+        return this.currentUserData;
+      }
 }

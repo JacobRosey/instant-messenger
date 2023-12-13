@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserData } from '../userdata.interface';
-import { UserDataService } from '../user.data.service';
+import { FirebaseService } from 'src/app/firebase.service';
 
 @Component({
   selector: 'app-inbox',
@@ -13,7 +13,7 @@ export class InboxComponent implements OnInit {
   isLoading: boolean = true;
   hasMessages: boolean = false;
 
-  constructor(private uds: UserDataService) {}
+  constructor(private fs: FirebaseService) {}
 
   ngOnInit() {
     this.getUserData();
@@ -21,7 +21,7 @@ export class InboxComponent implements OnInit {
 
   async getUserData(){
     try{
-      this.userData = await this.uds.getUserData();
+      this.userData = await this.fs.getStoredUserData();
     } catch(err){console.error(err)} finally {
       this.isLoading = false;
     };
