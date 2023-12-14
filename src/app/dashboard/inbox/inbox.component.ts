@@ -16,10 +16,10 @@ export class InboxComponent implements OnInit {
   constructor(private fs: FirebaseService) {}
 
   ngOnInit() {
-    this.getUserData();
+    this.getStoredUserData();
   }
 
-  async getUserData(){
+  async getStoredUserData(){
     try{
       this.userData = await this.fs.getStoredUserData();
     } catch(err){console.error(err)} finally {
