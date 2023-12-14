@@ -15,10 +15,13 @@ export class UserAuthService {
     
         if(userExists){
             const isValidated = await this.fs.validateLogin(u);
-            alert(isValidated ? "Login Successful" : "Invalid password");
-            this.router.navigateByUrl(isValidated ? '/dashboard' : '/login')
+            if(isValidated){
+                await this.fs.getUserData(u.username);
+                this.router.navigateByUrl('/dashboard')
+            }
         } else{
-            alert("User not found")
+            alert("User not found");
+            this.router.navigateByUrl('/login');
         }
     }
 
@@ -36,5 +39,4 @@ export class UserAuthService {
             alert(`${u.username} is not available :L`);
         }
     }
-
 }

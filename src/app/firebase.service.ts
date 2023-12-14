@@ -11,7 +11,6 @@ export class FirebaseService {
     userData = collection(this.db, 'users');
     userExists: boolean = false;
     isValidated: boolean = false;
-    currentUserName: string = "null";
     
     //Add properties to interface as needed
     currentUserData: UserData = { name: '', friends: 0, messages: 0 };
@@ -23,8 +22,7 @@ export class FirebaseService {
         this.userExists = false;
       }
 
-    //This function is used for onRegistration to see if a username is available
-    //and by onLogin to see if the username exists
+    //Used by login/register to see if name exists/unavailable
     async doesUserExist(user: User) {
         this.resetState();
         const userQuery = query(this.userData, where('name', '==', user.username)); 
@@ -39,13 +37,13 @@ export class FirebaseService {
                 }
             }
         } catch (error) {
-            console.error("Error fetching user data:", error);
+            console.error("Error fetching user data: ", error);
         }
         // If user not found
         return this.userExists;
     }
 
-    //Need to encrypt passwords and then register using an actual hash, not plaintext
+    //Need to encrypt passwords and then register using a hash, not plaintext
     async addNewUser(user: User){
         await addDoc(this.userData, {
             name: user.username, 
@@ -61,30 +59,27 @@ export class FirebaseService {
         querySnapshot.forEach((u) => {
             if(user.username.toLowerCase() == u.data()['name'].toLowerCase() && user.hash == u.data()['hash']){
                 this.isValidated = true;
-                this.currentUserName = user.username;
             } else this.isValidated = false;
         })
         return this.isValidated;
     }
 
-    //Don't just keep calling this when routing to inbox, my friends etc. 
-    //Instead share current user data across those components
-    async getUserData(){
-        const userQuery = query(this.userData, where('name', '==', this.currentUserName)); 
+    async getUserData(n: string){
+        const userQuery = query(this.userData, where('name', '==', n)); 
 
         try {
             const querySnapshot = await getDocs(userQuery);
             for (const u of querySnapshot.docs) {
                 this.currentUserData = {
-                    name: this.currentUserName,
+                    name: n,
                     friends: u.data()['friends'],
                     messages: u.data()['messages']
                 }
-                this.cookies.set('storedUserData', JSON.stringify(this.currentUserData));
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
-        }
+        }  
+        this.cookies.set('storedUserData', JSON.stringify(this.currentUserData)); 
         return this.currentUserData;
     }
 
@@ -95,7 +90,6 @@ export class FirebaseService {
         } else {
           console.log("error")
         }
-        console.log(`returning ${JSON.stringify(this.currentUserData)}`)
         return this.currentUserData;
       }
 }
