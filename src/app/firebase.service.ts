@@ -30,7 +30,7 @@ export class FirebaseService {
             const querySnapshot = await getDocs(userQuery);
         
             for (const u of querySnapshot.docs) {
-                const usernameMatch = user.username.toLowerCase() === u.data()['name'].toLowerCase();
+                const usernameMatch = user.username === u.data()['name'];
                 if (usernameMatch) {
                     this.userExists = true;
                     break;
@@ -46,7 +46,7 @@ export class FirebaseService {
     //Need to encrypt passwords and then register using a hash, not plaintext
     async addNewUser(user: User){
         await addDoc(this.userData, {
-            name: user.username, 
+            name: user.username.toLowerCase(), 
             hash: user.hash, 
             friends: 0, 
             messages: 0
@@ -91,5 +91,9 @@ export class FirebaseService {
           console.log("error")
         }
         return this.currentUserData;
-      }
+    }
+
+    async resetStoredUserData(){
+        this.cookies.delete('storedUserData')
+    }
 }

@@ -15,7 +15,7 @@ export class UserLoginComponent {
 
   onAttemptedLogin(u:string, h:string) {
       if (u && h) {
-        const myUser = new User(u, h);
+        const myUser = new User(u.toLowerCase(), h);
         this.authServ.onLogin(myUser);
       }
     }

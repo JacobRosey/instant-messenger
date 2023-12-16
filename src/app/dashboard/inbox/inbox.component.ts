@@ -28,5 +28,10 @@ export class InboxComponent implements OnInit {
     //Need to check for unread messages here, not just all messages. Toggles red 
     //tag showing new messages by inbox link
     this.hasMessages = this.userData.messages > 0 ? true : false;
+    this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1)
+  }
+
+  async onLogout(){
+    await this.fs.resetStoredUserData();
   }
 }
