@@ -8,7 +8,7 @@ import { CookieService } from "ngx-cookie-service";
 export class FirebaseService {
     constructor(private db: Firestore, private cookies: CookieService){}
 
-    userData = collection(this.db, 'users');
+    userCollection = collection(this.db, 'users');
     userExists: boolean = false;
     isValidated: boolean = false;
     
@@ -25,7 +25,7 @@ export class FirebaseService {
     //Used by login/register to see if name exists/unavailable
     async doesUserExist(user: User) {
         this.resetState();
-        const userQuery = query(this.userData, where('name', '==', user.username)); 
+        const userQuery = query(this.userCollection, where('name', '==', user.username)); 
         try {
             const querySnapshot = await getDocs(userQuery);
         
@@ -45,7 +45,7 @@ export class FirebaseService {
 
     //Need to encrypt passwords and then register using a hash, not plaintext
     async addNewUser(user: User){
-        await addDoc(this.userData, {
+        await addDoc(this.userCollection, {
             name: user.username.toLowerCase(), 
             hash: user.hash, 
             friends: 0, 
@@ -54,7 +54,7 @@ export class FirebaseService {
     }
 
     async validateLogin(user: User){
-        const hashQuery = query(this.userData, where('name', '==', user.username));
+        const hashQuery = query(this.userCollection, where('name', '==', user.username));
         const querySnapshot = await getDocs(hashQuery);
         querySnapshot.forEach((u) => {
             if(user.username.toLowerCase() == u.data()['name'].toLowerCase() && user.hash == u.data()['hash']){
@@ -65,8 +65,7 @@ export class FirebaseService {
     }
 
     async getUserData(n: string){
-        const userQuery = query(this.userData, where('name', '==', n)); 
-
+        const userQuery = query(this.userCollection, where('name', '==', n)); 
         try {
             const querySnapshot = await getDocs(userQuery);
             for (const u of querySnapshot.docs) {
