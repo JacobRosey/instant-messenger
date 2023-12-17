@@ -10,9 +10,10 @@ import { FirebaseService } from '../firebase.service';
 
 export class DashboardComponent implements OnInit {
 
-  userData: UserData = {name: '', friends: 0, messages: 0 };
+  userData: UserData = {name: '', friends: [], messages: [] };
   isLoading: boolean = true;
-  hasMessages: boolean = false;
+  unreadMessages : number  = 0;
+  hasUnreadMessages: boolean = false;
 
   constructor(private fs: FirebaseService) {}
 
@@ -26,12 +27,14 @@ export class DashboardComponent implements OnInit {
     } catch(err){console.error(err)} finally {
       this.isLoading = false;
     };
-    //Need to check for unread messages here, not just all messages. Toggles red 
-    //tag showing new messages by inbox link
-    this.hasMessages = this.userData.messages > 0 ? true : false;
+    //Toggles red tag showing how many unread messages the user has. 
+    //need to subscribe to userData (or something idk) to update this count
+    //as messages get read
+    this.unreadMessages = this.userData.messages.filter(message => !message.isRead).length;
+    this.hasUnreadMessages = this.unreadMessages ? true : false;
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1)
   }
   async onLogout(){
-    await this.fs.resetStoredUserData();
+    await this.fs.deleteStoredUserData();
   }
 }

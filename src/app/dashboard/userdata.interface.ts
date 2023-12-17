@@ -1,5 +1,14 @@
+export interface Message {
+  isRead: boolean,
+  content: string,
+  sender: string,
+  recipient: string,
+  timestamp: any
+  id: number
+}
+
 export interface UserData {
     name: string;
-    friends: number;
-    messages: number;
+    friends: Array<string>;
+    messages: Array<Message>;
   }

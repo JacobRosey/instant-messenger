@@ -1,7 +1,7 @@
 import { Firestore, collection, query, where, getDocs, addDoc } from "@angular/fire/firestore";
 import { User } from "./user.model";
 import { Injectable } from "@angular/core";
-import { UserData } from "./dashboard/userdata.interface";
+import { UserData, Message } from "./dashboard/userdata.interface";
 import { CookieService } from "ngx-cookie-service";
 
 @Injectable()
@@ -13,7 +13,7 @@ export class FirebaseService {
     isValidated: boolean = false;
     
     //Add properties to interface as needed
-    currentUserData: UserData = { name: '', friends: 0, messages: 0 };
+    currentUserData: UserData = { name: '', friends: [], messages: [] };
 
     //Since this is a service I can't destroy it to reinitialize (like you can with a component),
     //So this is good enough for now. Can add arguments if that becomes necessary
@@ -28,7 +28,6 @@ export class FirebaseService {
         const userQuery = query(this.userCollection, where('name', '==', user.username)); 
         try {
             const querySnapshot = await getDocs(userQuery);
-        
             for (const u of querySnapshot.docs) {
                 const usernameMatch = user.username === u.data()['name'];
                 if (usernameMatch) {
@@ -49,7 +48,7 @@ export class FirebaseService {
             name: user.username.toLowerCase(), 
             hash: user.hash, 
             friends: 0, 
-            messages: 0
+            messages: []
         });
     }
 
@@ -78,7 +77,7 @@ export class FirebaseService {
         } catch (error) {
             console.error("Error fetching user data:", error);
         }  
-        this.cookies.set('storedUserData', JSON.stringify(this.currentUserData)); 
+        this.cookies.set('storedUserData', JSON.stringify(this.currentUserData));
         return this.currentUserData;
     }
 
@@ -92,7 +91,7 @@ export class FirebaseService {
         return this.currentUserData;
     }
 
-    async resetStoredUserData(){
+    async deleteStoredUserData(){
         this.cookies.delete('storedUserData')
     }
 }
