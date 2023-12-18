@@ -16,14 +16,15 @@ export class InboxComponent implements OnInit {
   hasUnreadMessages: boolean = false;
   hasMessages: boolean = false;
   friendsList: Array<string> = []
+  groupedMessages: Message[][] = [];
 
   constructor(private fs: FirebaseService) {}
 
   async ngOnInit() {
     await this.getStoredUserData();
-    await this.setTemplateValues()
-    console.log(this.userData.messages)
-    await this.sortMsgTimestamps()
+    await this.setTemplateValues();
+    await this.sortMessages();
+    await this.groupMessages();
   }
 
   async getStoredUserData(){
@@ -35,8 +36,6 @@ export class InboxComponent implements OnInit {
   }
 
   async setTemplateValues(){
-    //Sort messages by sender then by timestamp
-    //Also need to show messages sent by the user that's logged in
     this.unreadMessages = this.userData.messages.filter(message => !message.isRead).length;
     this.hasMessages = this.userData.messages ? true : false;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
@@ -47,15 +46,16 @@ export class InboxComponent implements OnInit {
   async sendMessage(){
     
   }
+
   //Add way to show the year if the message is > 1 year old
-  async sortMsgTimestamps(){
+  async sortMessages(){
     this.userData.messages.forEach(msg => {
-      msg.sender = msg.sender.charAt(0).toUpperCase() + msg.sender.slice(1);
       msg.timestamp = new Date(msg.timestamp.seconds * 1000)
-    });
-    //Add collapsible button to show/hide messages from friend
-    //Sort by messages to and from the same users, then by time sent
-    // Sort by sender, recipient, and then timestamp
+      msg.sender = msg.sender.charAt(0).toUpperCase() + msg.sender.slice(1)
+      msg.recipient = msg.recipient.charAt(0).toUpperCase() + msg.recipient.slice(1)
+    })
+
+    //Sort by messages to and from the same 2 users, then by time sent
     this.userData.messages.sort((a, b) => {
       // Compare senders and recipients
       const senderComparison = a.sender.localeCompare(b.sender);
@@ -73,6 +73,42 @@ export class InboxComponent implements OnInit {
 
       return recipientComparison;
     });
+    this.userData.messages.forEach((msg)=>{
+      msg.timestamp = msg.timestamp.toLocaleString();
+    })
+  }
+
+  async groupMessages(){
+    //Now that array is sorted, push messages between the same 2 users to an array
+    //and then use that array to render html so I can separate messages to different users
+    let currentGroup: any[] = [];
+    this.userData.messages.forEach((msg, index, array) => {
+      if (index === 0) {
+        // Start the first group
+        currentGroup.push(msg);
+      } else {
+        const prevMsg = array[index - 1];
+        // Check if the current message is between the same two users
+        if (
+          (msg.sender === prevMsg.sender && msg.recipient === prevMsg.recipient) 
+                                        ||
+          (msg.sender === prevMsg.recipient && msg.recipient === prevMsg.sender)
+        ) {
+          // Add the message to the current group
+          currentGroup.push(msg);
+        } else {
+          // Start a new group for a different pair of users
+          this.groupedMessages.push([...currentGroup]);
+          currentGroup = [msg];
+        }
+      }
+  
+      // Add the last group
+      if (index === array.length - 1) {
+        this.groupedMessages.push([...currentGroup]);
+      }
+    });
+    console.log(this.groupedMessages);
   }
 
   async onLogout(){
