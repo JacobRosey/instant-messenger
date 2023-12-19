@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UserData } from './userdata.interface';
 import { FirebaseService } from '../firebase.service';
 
@@ -14,11 +14,38 @@ export class DashboardComponent implements OnInit {
   isLoading: boolean = true;
   unreadMessages : number  = 0;
   hasUnreadMessages: boolean = false;
+  navDropdownVisible: boolean = false;
+  rememberNavDropdown: boolean = false;
 
   constructor(private fs: FirebaseService) {}
 
   ngOnInit() {
     this.getStoredUserData();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.checkWindowWidth();
+  }
+
+  // Remembers if navbar was opened when window is resized, prevents both navbars from being open at once
+  private checkWindowWidth(): void {
+    const windowWidth = window.innerWidth;
+
+    if (windowWidth >= 1024) {
+      // Execute your function here
+      if(this.navDropdownVisible){
+        this.toggleNavDropdown()
+        this.rememberNavDropdown = true;
+      }
+    } else if(this.rememberNavDropdown && windowWidth < 1024){
+      this.toggleNavDropdown();
+      this.rememberNavDropdown = !this.rememberNavDropdown
+    }
+  }
+
+  toggleNavDropdown(){
+    this.navDropdownVisible = !this.navDropdownVisible
   }
 
   async getStoredUserData(){
@@ -30,7 +57,8 @@ export class DashboardComponent implements OnInit {
     //Toggles red tag showing how many unread messages the user has. 
     //need to subscribe to userData (or something idk) to update this count
     //as messages get read
-    this.unreadMessages = this.userData.messages.filter(message => !message.isRead).length;
+    this.unreadMessages = this.userData.messages.filter(message => !message.isRead && 
+      (message.sender.toLowerCase() !== this.userData.name.toLowerCase())).length;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1)
   }

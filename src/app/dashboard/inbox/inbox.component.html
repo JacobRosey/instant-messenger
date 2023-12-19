@@ -1,7 +1,7 @@
-<aside
+<aside 
     class="ml-[-100%] fixed z-10 top-0 pb-3 px-6 w-full flex flex-col justify-between h-screen border-r bg-gray-700 transition duration-300 md:w-4/12 lg:ml-0 lg:w-[25%] xl:w-[20%] 2xl:w-[15%]">
     <div>
-        <div class="mt-8 text-center">
+        <div class="mt-12 text-center">
             <img src="https://tailus.io/sources/blocks/stats-cards/preview/images/second_user.webp" alt=""
                 class="w-10 h-10 m-auto rounded-full object-cover lg:w-28 lg:h-28">
             <h5 class="hidden mt-4 text-white text-xl font-semibold text-gray-600 lg:block"><span
@@ -87,6 +87,7 @@
         </button>
     </div>
 </aside>
+
 <div class="ml-auto lg:w-[75%] xl:w-[80%] 2xl:w-[85%]">
     <div class="sticky z-10 top-0 h-16 border-b bg-gray-700 lg:py-2.5">
         <div class="px-6 flex items-center justify-between space-x-4 2xl:container">
@@ -150,7 +151,7 @@
                                     <time>{{data.timestamp}}</time>
                                 </p>
                             </div>
-                            <button id="dropdownComment1Button" data-dropdown-toggle="dropdownComment1"
+                            <button (click)="toggleCommentDropdown(i, j)" [attr.data-dropdown-toggle]="'dropdownComment' + i + j"
                                 class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                                 type="button">
                                 <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -161,28 +162,34 @@
                                 <span class="sr-only">Comment settings</span>
                             </button>
                             <!-- Dropdown menu -->
-                            <div id="dropdownComment1"
-                                class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                            <div id="dropdownComment1" id="{{'dropdownComment' + i + j}}" [class.hidden]="!commentDropdownStates[i]?.[j]" 
+                                class="absolute top-100 right-5 z-10 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
+                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
                                     aria-labelledby="dropdownMenuIconHorizontalButton">
-                                    <li>
-                                        <a href="#"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                                    <li> 
+                                        <a 
+                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            style="color: lime;">Edit</a>
                                     </li>
                                     <li>
-                                        <a href="#"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
+                                        <a (click)="deleteComment(i, j)"
+                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            style="color: red;">Delete</a>
                                     </li>
                                     <li>
-                                        <a href="#"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
+                                        <a (click)="toggleCommentDropdown(i, j)"
+                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            >Cancel</a>
                                     </li>
                                 </ul>
                             </div>
                         </footer>
                         <p class="text-gray-500 dark:text-gray-400">{{data.content}}</p>
                         <div class="flex items-center mt-4 space-x-4">
-                            <button type="button"
+                            <!--do something here besides 'reply' under all of them
+                            Maybe change from delivered/seen based on msg.isRead for this user's messages,
+                            and reply to scroll to the text box for messages sent from the other user-->
+                            <button type="button" 
                                 class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
                                 <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 20 18">
@@ -196,12 +203,12 @@
                         <form *ngIf="last" class="mt-6">
                             <div class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                                 <label for="reply" class="sr-only">Your reply</label>
-                                <textarea id="reply" rows="4"
+                                <textarea [(ngModel)]="replyTexts[i]" name="replyTexts" id="reply" rows="4"
                                     class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
                                     placeholder="Write your reply..." required></textarea>
                             </div>
-                            <button type="submit"
-                                class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                            <button (click)="sendMessage(i, j)" type="button"
+                                class="inline-flex items-center py-2.5 px-4 text-xs font-bold text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
                                 Send Reply
                             </button>
                         </form>

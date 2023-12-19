@@ -1,24 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { UserData, Message } from '../userdata.interface';
 import { FirebaseService } from 'src/app/firebase.service';
-import { ChangeDetectorRef } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
 })
+
 export class InboxComponent implements OnInit {
 
-  userData: UserData = {name: '', friends: [], messages: [] };
+  userData: UserData = { name: '', friends: [], messages: [] };
   isLoading: boolean = true;
-  unreadMessages : number  = 0;
+  unreadMessages: number = 0;
   hasUnreadMessages: boolean = false;
   hasMessages: boolean = false;
-  friendsList: Array<string> = []
+  //friendsList: Array<string> = []; currently not in use
   groupedMessages: Message[][] = [];
+  commentDropdownStates: boolean[][] = [];
+  replyTexts: Array<string> = [];
+  
 
-  constructor(private fs: FirebaseService) {}
+  constructor(private fs: FirebaseService) { }
 
   async ngOnInit() {
     await this.getStoredUserData();
@@ -27,28 +31,24 @@ export class InboxComponent implements OnInit {
     await this.groupMessages();
   }
 
-  async getStoredUserData(){
-    try{
+  async getStoredUserData() {
+    try {
       this.userData = await this.fs.getStoredUserData();
-    } catch(err){console.error(err)} finally {
+    } catch (err) { console.error(err) } finally {
       this.isLoading = false;
     };
   }
 
-  async setTemplateValues(){
-    this.unreadMessages = this.userData.messages.filter(message => !message.isRead).length;
+  async setTemplateValues() {
+    this.unreadMessages = this.userData.messages.filter(message => (!message.isRead) && 
+      message.sender.toLowerCase() !== this.userData.name.toLowerCase()).length;
     this.hasMessages = this.userData.messages ? true : false;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1);
   }
 
-  //send message to user here
-  async sendMessage(){
-    
-  }
-
   //Add way to show the year if the message is > 1 year old
-  async sortMessages(){
+  async sortMessages() {
     this.userData.messages.forEach(msg => {
       msg.timestamp = new Date(msg.timestamp.seconds * 1000)
       msg.sender = msg.sender.charAt(0).toUpperCase() + msg.sender.slice(1)
@@ -73,12 +73,12 @@ export class InboxComponent implements OnInit {
 
       return recipientComparison;
     });
-    this.userData.messages.forEach((msg)=>{
+    this.userData.messages.forEach((msg) => {
       msg.timestamp = msg.timestamp.toLocaleString();
     })
   }
 
-  async groupMessages(){
+  async groupMessages() {
     //Now that array is sorted, push messages between the same 2 users to an array
     //and then use that array to render html so I can separate messages to different users
     let currentGroup: any[] = [];
@@ -90,8 +90,7 @@ export class InboxComponent implements OnInit {
         const prevMsg = array[index - 1];
         // Check if the current message is between the same two users
         if (
-          (msg.sender === prevMsg.sender && msg.recipient === prevMsg.recipient) 
-                                        ||
+          (msg.sender === prevMsg.sender && msg.recipient === prevMsg.recipient) ||
           (msg.sender === prevMsg.recipient && msg.recipient === prevMsg.sender)
         ) {
           // Add the message to the current group
@@ -102,16 +101,39 @@ export class InboxComponent implements OnInit {
           currentGroup = [msg];
         }
       }
-  
+
       // Add the last group
       if (index === array.length - 1) {
         this.groupedMessages.push([...currentGroup]);
       }
     });
-    console.log(this.groupedMessages);
   }
 
-  async onLogout(){
+   //send message to user here
+   async sendMessage(i: number, j:number) {
+    const text = this.replyTexts[i];
+    const sender = this.userData.name;
+    const recipient = this.groupedMessages[i][j].recipient == sender ? this.groupedMessages[i][j].sender : this.groupedMessages[i][j].recipient
+    await this.fs.addMessage(sender.toLowerCase(), recipient.toLowerCase(), text)
+   }
+
+  toggleCommentDropdown(i: number, j: number){
+    if (!this.commentDropdownStates[i]) {
+      this.commentDropdownStates[i] = [];
+    }
+    this.commentDropdownStates[i][j] = !this.commentDropdownStates[i][j];
+  }
+
+  toggleConversationView(i: number, j:number){
+
+  }
+
+  async deleteComment(i: number, j: number){
+    //lowkey need message id's for this
+    console.log(`fixin to delete ${JSON.stringify(this.groupedMessages[i][j])}`)
+  }
+
+  async onLogout() {
     await this.fs.deleteStoredUserData();
   }
 }

@@ -1,4 +1,4 @@
-import { Firestore, collection, query, where, getDocs, addDoc } from "@angular/fire/firestore";
+import { Firestore, collection, query, where, getDocs, addDoc, doc, getDoc } from "@angular/fire/firestore";
 import { User } from "./user.model";
 import { Injectable } from "@angular/core";
 import { UserData, Message } from "./dashboard/userdata.interface";
@@ -6,12 +6,12 @@ import { CookieService } from "ngx-cookie-service";
 
 @Injectable()
 export class FirebaseService {
-    constructor(private db: Firestore, private cookies: CookieService){}
+    constructor(private db: Firestore, private cookies: CookieService) { }
 
     userCollection = collection(this.db, 'users');
     userExists: boolean = false;
     isValidated: boolean = false;
-    
+
     //Add properties to interface as needed
     currentUserData: UserData = { name: '', friends: [], messages: [] };
 
@@ -20,12 +20,12 @@ export class FirebaseService {
     resetState() {
         this.isValidated = false;
         this.userExists = false;
-      }
+    }
 
     //Used by login/register to see if name exists/unavailable
     async doesUserExist(user: User) {
         this.resetState();
-        const userQuery = query(this.userCollection, where('name', '==', user.username)); 
+        const userQuery = query(this.userCollection, where('name', '==', user.username));
         try {
             const querySnapshot = await getDocs(userQuery);
             for (const u of querySnapshot.docs) {
@@ -43,28 +43,59 @@ export class FirebaseService {
     }
 
     //Need to encrypt passwords and then register using a hash, not plaintext
-    async addNewUser(user: User){
+    async addNewUser(user: User) {
         await addDoc(this.userCollection, {
-            name: user.username.toLowerCase(), 
-            hash: user.hash, 
-            friends: 0, 
+            name: user.username.toLowerCase(),
+            hash: user.hash,
+            friends: 0,
             messages: []
         });
     }
 
-    async validateLogin(user: User){
+    //sender, recipient, message text
+    async addMessage(s: string, r: string, t: string) {
+        console.log(s, r, t)
+        const senderQuery = query(this.userCollection, where('name', '==', s));
+        const recipientQuery = query(this.userCollection, where('name', '==', r));
+
+        const senderQuerySnapshot = await getDocs(senderQuery)
+        const recipientQuerySnapshot = await getDocs(recipientQuery);
+
+        const recipientID = recipientQuerySnapshot.docs[0].id
+        const senderID = senderQuerySnapshot.docs[0].id
+        console.log(recipientID, senderID)
+
+        const recipientMessages = collection(this.userCollection, recipientID, 'messages')
+        const senderMessages = collection(this.userCollection, senderID, 'messages')
+
+        await addDoc(recipientMessages, {
+            sender: s,
+            recipient: r,
+            content: t,
+            isRead: false,
+          })
+
+          await addDoc(senderMessages, {
+            sender: s,
+            recipient: r,
+            content: t,
+            isRead: false,
+          })
+    }
+
+    async validateLogin(user: User) {
         const hashQuery = query(this.userCollection, where('name', '==', user.username));
         const querySnapshot = await getDocs(hashQuery);
         querySnapshot.forEach((u) => {
-            if(user.username.toLowerCase() == u.data()['name'].toLowerCase() && user.hash == u.data()['hash']){
+            if (user.username.toLowerCase() == u.data()['name'].toLowerCase() && user.hash == u.data()['hash']) {
                 this.isValidated = true;
             } else this.isValidated = false;
         })
         return this.isValidated;
     }
 
-    async getUserData(n: string){
-        const userQuery = query(this.userCollection, where('name', '==', n)); 
+    async getUserData(n: string) {
+        const userQuery = query(this.userCollection, where('name', '==', n));
         try {
             const querySnapshot = await getDocs(userQuery);
             for (const u of querySnapshot.docs) {
@@ -76,22 +107,22 @@ export class FirebaseService {
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
-        }  
+        }
         this.cookies.set('storedUserData', JSON.stringify(this.currentUserData));
         return this.currentUserData;
     }
 
-    async getStoredUserData(){
+    async getStoredUserData() {
         const storedUserData = this.cookies.get('storedUserData');
         if (storedUserData) {
-          this.currentUserData = JSON.parse(storedUserData);
+            this.currentUserData = JSON.parse(storedUserData);
         } else {
-          console.log("error")
+            console.log("error")
         }
         return this.currentUserData;
     }
 
-    async deleteStoredUserData(){
+    async deleteStoredUserData() {
         this.cookies.delete('storedUserData')
     }
 }
