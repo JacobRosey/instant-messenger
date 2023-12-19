@@ -163,7 +163,7 @@
                             </button>
                             <!-- Dropdown menu -->
                             <div id="dropdownComment1" id="{{'dropdownComment' + i + j}}" [class.hidden]="!commentDropdownStates[i]?.[j]" 
-                                class="absolute top-100 right-5 z-10 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
+                                class="absolute mt-10 top-100 right-5 z-0 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
                                 <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
                                     aria-labelledby="dropdownMenuIconHorizontalButton">
                                     <li> 
@@ -174,12 +174,7 @@
                                     <li>
                                         <a (click)="deleteComment(i, j)"
                                             class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            style="color: red;">Delete</a>
-                                    </li>
-                                    <li>
-                                        <a (click)="toggleCommentDropdown(i, j)"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            >Cancel</a>
+                                            style="color: crimson;">Delete</a>
                                     </li>
                                 </ul>
                             </div>
@@ -205,11 +200,11 @@
                                 <label for="reply" class="sr-only">Your reply</label>
                                 <textarea [(ngModel)]="replyTexts[i]" name="replyTexts" id="reply" rows="4"
                                     class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
-                                    placeholder="Write your reply..." required></textarea>
+                                    placeholder="Write your message..." required></textarea>
                             </div>
                             <button (click)="sendMessage(i, j)" type="button"
                                 class="inline-flex items-center py-2.5 px-4 text-xs font-bold text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-                                Send Reply
+                                Send Message
                             </button>
                         </form>
                     </article>

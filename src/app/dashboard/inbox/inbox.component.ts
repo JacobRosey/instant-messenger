@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 
 export class InboxComponent implements OnInit {
 
+  //messages: Array<Message> = []; to avoid using this.userData.messages everywhere
+  //Will have to subscribe to messages to see changes though
   userData: UserData = { name: '', friends: [], messages: [] };
   isLoading: boolean = true;
   unreadMessages: number = 0;
@@ -25,6 +27,7 @@ export class InboxComponent implements OnInit {
   constructor(private fs: FirebaseService) { }
 
   async ngOnInit() {
+    //this.messages = this.userData.messages 
     await this.getStoredUserData();
     await this.setTemplateValues();
     await this.sortMessages();
@@ -41,13 +44,13 @@ export class InboxComponent implements OnInit {
 
   async setTemplateValues() {
     this.unreadMessages = this.userData.messages.filter(message => (!message.isRead) && 
-      message.sender.toLowerCase() !== this.userData.name.toLowerCase()).length;
+      message.recipient.toLowerCase() == this.userData.name.toLowerCase()).length;
     this.hasMessages = this.userData.messages ? true : false;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1);
   }
 
-  //Add way to show the year if the message is > 1 year old
+  //Sort messages, capitalize first letter of username for rendering to html
   async sortMessages() {
     this.userData.messages.forEach(msg => {
       msg.timestamp = new Date(msg.timestamp.seconds * 1000)
@@ -61,7 +64,8 @@ export class InboxComponent implements OnInit {
       const senderComparison = a.sender.localeCompare(b.sender);
       const recipientComparison = a.recipient.localeCompare(b.recipient);
 
-      // If senders and recipients are the same, compare timestamps
+      // If senders and recipients are the same, the message is between the same two users
+      // so now compare timestamps
       if (senderComparison === 0 && recipientComparison === 0) {
         return a.timestamp.getTime() - b.timestamp.getTime();
       }
@@ -130,6 +134,7 @@ export class InboxComponent implements OnInit {
 
   async deleteComment(i: number, j: number){
     //lowkey need message id's for this
+    //Add id to the Message interface and just use the auto-generated doc id from firebase
     console.log(`fixin to delete ${JSON.stringify(this.groupedMessages[i][j])}`)
   }
 

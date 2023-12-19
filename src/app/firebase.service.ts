@@ -1,4 +1,4 @@
-import { Firestore, collection, query, where, getDocs, addDoc, doc, getDoc } from "@angular/fire/firestore";
+import { Firestore, collection, query, where, getDocs, addDoc, doc, getDoc, Timestamp, updateDoc, arrayUnion } from "@angular/fire/firestore";
 import { User } from "./user.model";
 import { Injectable } from "@angular/core";
 import { UserData, Message } from "./dashboard/userdata.interface";
@@ -54,33 +54,41 @@ export class FirebaseService {
 
     //sender, recipient, message text
     async addMessage(s: string, r: string, t: string) {
-        console.log(s, r, t)
         const senderQuery = query(this.userCollection, where('name', '==', s));
         const recipientQuery = query(this.userCollection, where('name', '==', r));
 
         const senderQuerySnapshot = await getDocs(senderQuery)
         const recipientQuerySnapshot = await getDocs(recipientQuery);
 
-        const recipientID = recipientQuerySnapshot.docs[0].id
         const senderID = senderQuerySnapshot.docs[0].id
-        console.log(recipientID, senderID)
+        const recipientID = recipientQuerySnapshot.docs[0].id
 
-        const recipientMessages = collection(this.userCollection, recipientID, 'messages')
-        const senderMessages = collection(this.userCollection, senderID, 'messages')
+        const senderMessages = doc(this.userCollection, senderID)
+        const recipientMessages = doc(this.userCollection, recipientID)
 
-        await addDoc(recipientMessages, {
-            sender: s,
-            recipient: r,
-            content: t,
-            isRead: false,
-          })
-
-          await addDoc(senderMessages, {
-            sender: s,
-            recipient: r,
-            content: t,
-            isRead: false,
-          })
+        const thisVeryMoment = Timestamp.fromDate(new Date());
+        
+        try{
+            await updateDoc(recipientMessages, {
+                messages: arrayUnion({
+                    sender: s,
+                    recipient: r,
+                    content: t,
+                    isRead: false,
+                    timestamp: thisVeryMoment,
+                  }),
+              })
+            
+            await updateDoc(senderMessages, {
+                messages: arrayUnion({
+                    sender: s,
+                    recipient: r,
+                    content: t,
+                    isRead: false,
+                    timestamp: thisVeryMoment,
+                })
+            })
+        }catch(error){console.error(error)}
     }
 
     async validateLogin(user: User) {
