@@ -16,6 +16,7 @@ import { InboxComponent } from './dashboard/inbox/inbox.component';
 import {provideFirebaseApp, getApp, initializeApp} from '@angular/fire/app';
 import {getFirestore, provideFirestore} from '@angular/fire/firestore';
 import { FirebaseService } from './firebase.service';
+import { NavbarComponent } from './navbar/navbar.component';
 
 
 const firebaseConfig = {
@@ -37,7 +38,8 @@ const firebaseConfig = {
     UserRegisterComponent,
     LandingPageComponent,
     PagenotfoundComponent,
-    InboxComponent
+    InboxComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
