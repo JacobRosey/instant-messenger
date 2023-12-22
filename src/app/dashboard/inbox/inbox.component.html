@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-    <section class="bg-gray-900 py-8 lg:py-16 antialiased">
+    <section class="bg-gray-900 py-8 lg:py-16 antialiased flex-grow transition duration-300">
         <div class="max-w-2xl mx-auto px-4">
             <div class="flex justify-between items-center mb-6">
                 <h2
@@ -34,7 +34,7 @@
                             </button>
                             <!-- Dropdown menu -->
                             <div id="dropdownComment1" id="{{'dropdownComment' + i + j}}" [class.hidden]="!commentDropdownStates[i]?.[j]" 
-                                class="absolute mt-10 top-100 right-5 z-0 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
+                                class="absolute mt-20 top-100 right-5 z-0 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
                                 <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
                                     aria-labelledby="dropdownMenuIconHorizontalButton">
                                     <li> 
@@ -46,6 +46,11 @@
                                         <a (click)="deleteComment(i, j)"
                                             class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             style="color: crimson;">Delete</a>
+                                    </li>
+                                    <li>
+                                        <a (click)="toggleCommentDropdown(i, j)"
+                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            style="color: white;">Cancel</a>
                                     </li>
                                 </ul>
                             </div>

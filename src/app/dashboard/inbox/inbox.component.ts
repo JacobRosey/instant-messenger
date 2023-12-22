@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserData, Message } from '../userdata.interface';
 import { FirebaseService } from 'src/app/firebase.service';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-inbox',
@@ -11,14 +10,11 @@ import { FormsModule } from '@angular/forms';
 
 export class InboxComponent implements OnInit {
 
-  //messages: Array<Message> = []; to avoid using this.userData.messages everywhere
-  //Will have to subscribe to messages to see changes though
   userData: UserData = { name: '', friends: [], messages: [] };
   isLoading: boolean = true;
   unreadMessages: number = 0;
   hasUnreadMessages: boolean = false;
   hasMessages: boolean = false;
-  //friendsList: Array<string> = []; currently not in use
   groupedMessages: Message[][] = [];
   commentDropdownStates: boolean[][] = [];
   replyTexts: Array<string> = [];
@@ -58,7 +54,7 @@ export class InboxComponent implements OnInit {
       msg.recipient = msg.recipient.charAt(0).toUpperCase() + msg.recipient.slice(1)
     })
 
-    //Sort by messages to and from the same 2 users, then by time sent
+    //Sort by messages to and from the same 2 users
     this.userData.messages.sort((a, b) => {
       // Compare senders and recipients
       const senderComparison = a.sender.localeCompare(b.sender);
@@ -77,9 +73,6 @@ export class InboxComponent implements OnInit {
 
       return recipientComparison;
     });
-    this.userData.messages.forEach((msg) => {
-      msg.timestamp = msg.timestamp.toLocaleString();
-    })
   }
 
   async groupMessages() {
@@ -111,6 +104,14 @@ export class InboxComponent implements OnInit {
         this.groupedMessages.push([...currentGroup]);
       }
     });
+    for(let i=0; i<this.groupedMessages.length; i++){
+      this.groupedMessages[i].sort((a, b)=>{
+        return a.timestamp - b.timestamp
+      })
+      this.groupedMessages[i].forEach((msg) => {
+        msg.timestamp = msg.timestamp.toLocaleString()
+      })
+    }
   }
 
    //send message to user here

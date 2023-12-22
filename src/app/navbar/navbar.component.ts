@@ -16,6 +16,7 @@ export class NavbarComponent implements OnInit {
   navDropdownVisible: boolean = false;
   rememberNavDropdown: boolean = false;
   currentRoute: string = ''
+  isDropdownAnimating: boolean = false;
 
   constructor(private fs: FirebaseService, private router: Router) {}
 
@@ -48,6 +49,12 @@ export class NavbarComponent implements OnInit {
 
   toggleNavDropdown(){
     this.navDropdownVisible = !this.navDropdownVisible
+    this.isDropdownAnimating = true;
+
+    // Use a timeout to reset the animation flag after the duration of the transition
+    setTimeout(() => {
+      this.isDropdownAnimating = false;
+    }, 1000);
   }
 
   async getStoredUserData(){
