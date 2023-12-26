@@ -16,8 +16,10 @@ export class InboxComponent implements OnInit {
   hasUnreadMessages: boolean = false;
   hasMessages: boolean = false;
   groupedMessages: Message[][] = [];
+  savedMsgState: Message[][] = []
   commentDropdownStates: boolean[][] = [];
   replyTexts: Array<string> = [];
+  conversationsCollapsed: boolean[] = [];
   
 
   constructor(private fs: FirebaseService) { }
@@ -28,6 +30,9 @@ export class InboxComponent implements OnInit {
     await this.setTemplateValues();
     await this.sortMessages();
     await this.groupMessages();
+    for(let i=0; i<this.groupedMessages.length; i++){
+      this.conversationsCollapsed[i] = false;
+    }
   }
 
   async getStoredUserData() {
@@ -129,8 +134,14 @@ export class InboxComponent implements OnInit {
     this.commentDropdownStates[i][j] = !this.commentDropdownStates[i][j];
   }
 
-  toggleConversationView(i: number, j:number){
+  scrollToReplyForm(i: number){
+    const el = document.querySelectorAll('.replyForm')[i];
+    el.scrollIntoView(true);
+  }
 
+  //Might just want to add isVisible property to message
+  toggleConversationView(i: number){
+    this.conversationsCollapsed[i] = !this.conversationsCollapsed[i]
   }
 
   async deleteComment(i: number, j: number){

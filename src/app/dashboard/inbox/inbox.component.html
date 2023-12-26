@@ -1,66 +1,74 @@
 <app-navbar></app-navbar>
-    <section class="bg-gray-900 py-8 lg:py-16 antialiased flex-grow transition duration-300">
-        <div class="max-w-2xl mx-auto px-4">
-            <div class="flex justify-between items-center mb-6">
-                <h2
-                    class="text-lg lg:text-2xl font-bold rounded-xl px-14 py-3 bg-gray-800 m-auto text-gray-200 dark:text-white">
-                    Messages</h2>
-            </div>
-            <div *ngIf="hasMessages">
-                <div *ngFor="let msg of this.groupedMessages, index as i">
-                    <article *ngFor="let data of msg, let last = last, index as j"
-                        class="p-6 text-base bg-white rounded-lg dark:bg-gray-900">
-                        <footer class="flex justify-between items-center mb-2">
-                            <div class="flex items-center">
-                                <p
-                                    class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                                    <img class="mr-2 w-6 h-6 rounded-full"
-                                        src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
-                                        alt=>{{data.sender}}
-                                </p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    <time>{{data.timestamp}}</time>
-                                </p>
-                            </div>
-                            <button (click)="toggleCommentDropdown(i, j)" [attr.data-dropdown-toggle]="'dropdownComment' + i + j"
-                                class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                                type="button">
-                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor" viewBox="0 0 16 3">
-                                    <path
-                                        d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
-                                </svg>
-                                <span class="sr-only">Comment settings</span>
-                            </button>
-                            <!-- Dropdown menu -->
-                            <div id="dropdownComment1" id="{{'dropdownComment' + i + j}}" [class.hidden]="!commentDropdownStates[i]?.[j]" 
-                                class="absolute mt-20 top-100 right-5 z-0 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
-                                    aria-labelledby="dropdownMenuIconHorizontalButton">
-                                    <li> 
-                                        <a 
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            style="color: lime;">Edit</a>
-                                    </li>
-                                    <li>
-                                        <a (click)="deleteComment(i, j)"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            style="color: crimson;">Delete</a>
-                                    </li>
-                                    <li>
-                                        <a (click)="toggleCommentDropdown(i, j)"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            style="color: white;">Cancel</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </footer>
+<section class="bg-gray-900 py-8 lg:py-16 antialiased flex-grow transition duration-300">
+    <div class="max-w-2xl mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+            <h2
+                class="text-lg lg:text-2xl font-bold rounded-xl px-14 py-3 bg-gray-800 m-auto text-gray-200 dark:text-white">
+                Messages</h2>
+        </div>
+        <div *ngIf="hasMessages">
+            <div *ngFor="let msg of this.groupedMessages, index as i">
+                <ng-container *ngFor="let data of msg, let first = first, let last = last, index as j">
+                    <article *ngIf="!this.conversationsCollapsed[i] || first" class="p-6 text-base bg-white rounded-lg dark:bg-gray-900">
+                    <footer class="flex justify-between items-center mb-2">
+                        <div class="flex items-center">
+                            <p
+                                class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+                                <img class="mr-2 w-6 h-6 rounded-full"
+                                    src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
+                                    alt="friend's name">{{data.sender}}
+                            </p>
+                            <p class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                <time>{{data.timestamp}}</time>
+                            </p>
+                        </div>
+                        <svg *ngIf="first" (click)="toggleConversationView(i)" class="ml-24" style="cursor:pointer;"
+                            xmlns="http://www.w3.org/2000/svg" height="12" width="12" fill="#999" viewBox="0 0 384 512">
+                            <path
+                                d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z" />
+                        </svg>
+                        <button *ngIf="!this.conversationsCollapsed[i]" (click)="toggleCommentDropdown(i, j)"
+                            [attr.data-dropdown-toggle]="'dropdownComment' + i + j"
+                            class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                            type="button">
+                            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor" viewBox="0 0 16 3">
+                                <path
+                                    d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                            </svg>
+                            <span class="sr-only">Comment settings</span>
+                        </button>
+                        <!-- Dropdown menu -->
+                        <div id="dropdownComment1" id="{{'dropdownComment' + i + j}}"
+                            [class.hidden]="!commentDropdownStates[i]?.[j]"
+                            class="absolute mt-20 top-100 right-5 z-0 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
+                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
+                                aria-labelledby="dropdownMenuIconHorizontalButton">
+                                <li>
+                                    <a class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                        style="color: lime;">Edit</a>
+                                </li>
+                                <li>
+                                    <a (click)="deleteComment(i, j)"
+                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                        style="color: crimson;">Delete</a>
+                                </li>
+                                <li>
+                                    <a (click)="toggleCommentDropdown(i, j)"
+                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                        style="color: white;">Cancel</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </footer>
+                    <div class="flex text-white ml-48 mt-8 font-bold underline" *ngIf="this.conversationsCollapsed[i]">{{this.groupedMessages[i].length}} Messages</div>
+                    <div *ngIf="!this.conversationsCollapsed[i]">
                         <p class="text-gray-500 dark:text-gray-400">{{data.content}}</p>
-                        <div class="flex items-center mt-4 space-x-4">
+                        <div class="flex items-center mt-4 space-x-4" *ngIf="this.userData.name !== data.sender">
                             <!--do something here besides 'reply' under all of them
                             Maybe change from delivered/seen based on msg.isRead for this user's messages,
                             and reply to scroll to the text box for messages sent from the other user-->
-                            <button type="button" 
+                            <button type="button" (click)="scrollToReplyForm(i)"
                                 class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
                                 <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 20 18">
@@ -72,34 +80,37 @@
                             </button>
                         </div>
                         <form *ngIf="last" class="mt-6">
-                            <div class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                            <div
+                                class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                                 <label for="reply" class="sr-only">Your reply</label>
                                 <textarea [(ngModel)]="replyTexts[i]" name="replyTexts" id="reply" rows="4"
                                     class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
                                     placeholder="Write your message..." required></textarea>
                             </div>
                             <button (click)="sendMessage(i, j)" type="button"
-                                class="inline-flex items-center py-2.5 px-4 text-xs font-bold text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                class="replyForm inline-flex items-center py-2.5 px-4 text-xs font-bold text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
                                 Send Message
                             </button>
                         </form>
-                    </article>
-                </div>
+                    </div>
+                </article>
+                </ng-container>
             </div>
         </div>
-        <section *ngIf="!hasMessages" class="bg-white dark:bg-gray-900 ml-8" style="height: 100%; overflow: hidden;">
-            <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-                <div class="mr-auto place-self-center lg:col-span-7">
-                    <h1
-                        class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
-                        Your inbox is empty!</h1>
-                    <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
-                        Add something here to send a message to a dropdown list of friends. If no friends, add button to
-                        my link to my friends where you can add a friend</p>
-                </div>
-                <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png" alt="mockup">
-                </div>
+    </div>
+    <section *ngIf="!hasMessages" class="bg-white dark:bg-gray-900 ml-8" style="height: 100%; overflow: hidden;">
+        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+            <div class="mr-auto place-self-center lg:col-span-7">
+                <h1
+                    class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
+                    Your inbox is empty!</h1>
+                <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+                    Add something here to send a message to a dropdown list of friends. If no friends, add button to
+                    my link to my friends where you can add a friend</p>
             </div>
-        </section>
+            <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
+                <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png" alt="mockup">
+            </div>
+        </div>
     </section>
+</section>
