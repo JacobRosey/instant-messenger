@@ -22,8 +22,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.getStoredUserData();
-    this.currentRoute = this.router.url;
-    console.log(this.currentRoute)
+    this.currentRoute = this.router.url.slice(1).charAt(0).toUpperCase() + this.router.url.slice(2);
   }
 
   @HostListener('window:resize', ['$event'])

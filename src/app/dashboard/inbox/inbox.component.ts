@@ -33,6 +33,7 @@ export class InboxComponent implements OnInit {
     for(let i=0; i<this.groupedMessages.length; i++){
       this.conversationsCollapsed[i] = false;
     }
+    console.log(this.hasMessages)
   }
 
   async getStoredUserData() {
@@ -46,7 +47,7 @@ export class InboxComponent implements OnInit {
   async setTemplateValues() {
     this.unreadMessages = this.userData.messages.filter(message => (!message.isRead) && 
       message.recipient.toLowerCase() == this.userData.name.toLowerCase()).length;
-    this.hasMessages = this.userData.messages ? true : false;
+    this.hasMessages = this.userData.messages.length > 0 ? true : false;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1);
   }
