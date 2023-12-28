@@ -11,7 +11,7 @@ export class UserAuthService {
 
     async onLogin(u: User) {
         //First check if username exists in db
-        const userExists = await this.fs.doesUserExist(u); 
+        const userExists = await this.fs.doesUserExist(u.username); 
     
         if(userExists){
             const isValidated = await this.fs.validateLogin(u);
@@ -27,7 +27,7 @@ export class UserAuthService {
 
     async onRegister(u: User) {
         //Query db to see if username is taken
-        const userNameTaken = await this.fs.doesUserExist(u); 
+        const userNameTaken = await this.fs.doesUserExist(u.username); 
         if(!userNameTaken){
             try{
                 await this.fs.addNewUser(u);

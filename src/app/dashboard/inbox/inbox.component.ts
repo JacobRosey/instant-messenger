@@ -20,6 +20,7 @@ export class InboxComponent implements OnInit {
   commentDropdownStates: boolean[][] = [];
   replyTexts: Array<string> = [];
   conversationsCollapsed: boolean[] = [];
+  hasFriends: boolean = false;
   
 
   constructor(private fs: FirebaseService) { }
@@ -33,7 +34,7 @@ export class InboxComponent implements OnInit {
     for(let i=0; i<this.groupedMessages.length; i++){
       this.conversationsCollapsed[i] = false;
     }
-    console.log(this.hasMessages)
+    console.log(this.userData)
   }
 
   async getStoredUserData() {
@@ -50,6 +51,7 @@ export class InboxComponent implements OnInit {
     this.hasMessages = this.userData.messages.length > 0 ? true : false;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1);
+    this.hasFriends = this.userData.friends.length > 0 ? true : false;
   }
 
   //Sort messages, capitalize first letter of username for rendering to html
@@ -153,5 +155,20 @@ export class InboxComponent implements OnInit {
 
   async onLogout() {
     await this.fs.deleteStoredUserData();
+  }
+
+  async addFriend(name: string){
+      const userExists = await this.fs.doesUserExist(name);
+      if(userExists){
+        if(this.userData.name.toLowerCase() == name){
+          alert("Did you really just try to add yourself as a friend?")
+          return;
+        }
+        await this.fs.addFriend(this.userData.name.toLowerCase(), name)
+      }
+  }
+
+  testMsg(f: Object){
+    console.log(f)
   }
 }

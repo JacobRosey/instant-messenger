@@ -23,13 +23,13 @@ export class FirebaseService {
     }
 
     //Used by login/register to see if name exists/unavailable
-    async doesUserExist(user: User) {
+    async doesUserExist(username: string) {
         this.resetState();
-        const userQuery = query(this.userCollection, where('name', '==', user.username));
+        const userQuery = query(this.userCollection, where('name', '==', username));
         try {
             const querySnapshot = await getDocs(userQuery);
             for (const u of querySnapshot.docs) {
-                const usernameMatch = user.username === u.data()['name'];
+                const usernameMatch = username === u.data()['name'];
                 if (usernameMatch) {
                     this.userExists = true;
                     break;
@@ -132,5 +132,10 @@ export class FirebaseService {
 
     async deleteStoredUserData() {
         this.cookies.delete('storedUserData')
+    }
+    
+    //current username, friend username
+    async addFriend(cUsername: string, fUsername: string){
+        //do add friend stuff here
     }
 }
