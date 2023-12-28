@@ -134,8 +134,39 @@ export class FirebaseService {
         this.cookies.delete('storedUserData')
     }
     
-    //current username, friend username
-    async addFriend(cUsername: string, fUsername: string){
+    //sender username, recipient username
+    async addFriend(sUser: string, rUser: string){
         //do add friend stuff here
+        const senderQuery = query(this.userCollection, where('name', '==', sUser));
+        const recipientQuery = query(this.userCollection, where('name', '==', rUser));
+
+        const senderQuerySnapshot = await getDocs(senderQuery)
+        const recipientQuerySnapshot = await getDocs(recipientQuery);
+
+        const senderID = senderQuerySnapshot.docs[0].id
+        const recipientID = recipientQuerySnapshot.docs[0].id
+
+        const senderRequests = doc(this.userCollection, senderID)
+        const recipientRequests = doc(this.userCollection, recipientID)
+
+        const thisVeryMoment = Timestamp.fromDate(new Date());
+        
+        try{
+            await updateDoc(senderRequests, {
+                requests: arrayUnion({
+                    name: rUser,
+                    isSender: true,
+                    timestamp: thisVeryMoment,
+                  }),
+              })
+            
+            await updateDoc(recipientRequests, {
+                requests: arrayUnion({
+                    name: sUser,
+                    isSender: false,
+                    timestamp: thisVeryMoment,
+                })
+            })
+        }catch(error){console.error(error)}
     }
 }

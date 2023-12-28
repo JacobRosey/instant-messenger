@@ -17,6 +17,7 @@ import {provideFirebaseApp, getApp, initializeApp} from '@angular/fire/app';
 import {getFirestore, provideFirestore} from '@angular/fire/firestore';
 import { FirebaseService } from './firebase.service';
 import { NavbarComponent } from './navbar/navbar.component';
+import { FriendsComponent } from './friends/friends.component';
 
 
 const firebaseConfig = {
@@ -39,7 +40,8 @@ const firebaseConfig = {
     LandingPageComponent,
     PagenotfoundComponent,
     InboxComponent,
-    NavbarComponent
+    NavbarComponent,
+    FriendsComponent
   ],
   imports: [
     BrowserModule,

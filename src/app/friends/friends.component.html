@@ -1,0 +1,11 @@
+<app-navbar></app-navbar>
+<section class="dark:bg-gray-900" style="height: 100vh;">
+    <div class="flex w-[50%] m-auto">
+        <input type="text" id="success" class="text-white text-sm rounded-lg mt-8 block w-full p-2.5 dark:bg-gray-700"
+            placeholder="Friend Name" #newFriendName>
+        <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button"
+            class="w-48 ml-4 mt-8 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            Add Friend
+        </button>
+    </div>
+</section>
