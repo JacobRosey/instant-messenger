@@ -10,7 +10,7 @@ import { FirebaseService } from 'src/app/firebase.service';
 
 export class InboxComponent implements OnInit {
 
-  userData: UserData = { name: '', friends: [], messages: [] };
+  userData: UserData = { name: '', friends: [], messages: [], requests: [] };
   isLoading: boolean = true;
   unreadMessages: number = 0;
   hasUnreadMessages: boolean = false;

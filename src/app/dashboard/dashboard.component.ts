@@ -10,7 +10,7 @@ import { FirebaseService } from '../firebase.service';
 
 export class DashboardComponent implements OnInit {
 
-  userData: UserData = {name: '', friends: [], messages: [] };
+  userData: UserData = {name: '', friends: [], messages: [], requests: [] };
 
   constructor(private fs: FirebaseService) {}
 

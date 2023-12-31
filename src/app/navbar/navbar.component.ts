@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
-  userData: UserData = {name: '', friends: [], messages: [] };
+  userData: UserData = {name: '', friends: [], messages: [], requests: [] };
   isLoading: boolean = true;
   unreadMessages : number  = 0;
   hasUnreadMessages: boolean = false;

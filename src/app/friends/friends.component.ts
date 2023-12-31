@@ -13,7 +13,7 @@ export class FriendsComponent implements OnInit {
 
   constructor(private fs: FirebaseService) { }
 
-  userData: UserData = { name: '', friends: [], messages: [] };
+  userData: UserData = {name: '', friends: [], messages: [], requests: [] };
 
   async ngOnInit() {
     await this.getStoredUserData();

@@ -13,10 +13,8 @@ export class FirebaseService {
     isValidated: boolean = false;
 
     //Add properties to interface as needed
-    currentUserData: UserData = { name: '', friends: [], messages: [] };
+    currentUserData: UserData = { name: '', friends: [], messages: [], requests: [] };
 
-    //Since this is a service I can't destroy it to reinitialize (like you can with a component),
-    //So this is good enough for now. Can add arguments if that becomes necessary
     resetState() {
         this.isValidated = false;
         this.userExists = false;
@@ -67,8 +65,8 @@ export class FirebaseService {
         const recipientMessages = doc(this.userCollection, recipientID)
 
         const thisVeryMoment = Timestamp.fromDate(new Date());
-        
-        try{
+
+        try {
             await updateDoc(recipientMessages, {
                 messages: arrayUnion({
                     sender: s,
@@ -76,9 +74,9 @@ export class FirebaseService {
                     content: t,
                     isRead: false,
                     timestamp: thisVeryMoment,
-                  }),
-              })
-            
+                }),
+            })
+
             await updateDoc(senderMessages, {
                 messages: arrayUnion({
                     sender: s,
@@ -88,7 +86,7 @@ export class FirebaseService {
                     timestamp: thisVeryMoment,
                 })
             })
-        }catch(error){console.error(error)}
+        } catch (error) { console.error(error) }
     }
 
     async validateLogin(user: User) {
@@ -110,9 +108,11 @@ export class FirebaseService {
                 this.currentUserData = {
                     name: n,
                     friends: u.data()['friends'],
-                    messages: u.data()['messages']
+                    messages: u.data()['messages'],
+                    requests: u.data()['requests']
                 }
             }
+            console.log(this.currentUserData)
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
@@ -133,9 +133,9 @@ export class FirebaseService {
     async deleteStoredUserData() {
         this.cookies.delete('storedUserData')
     }
-    
+
     //sender username, recipient username
-    async addFriend(sUser: string, rUser: string){
+    async addFriend(sUser: string, rUser: string) {
         //do add friend stuff here
         const senderQuery = query(this.userCollection, where('name', '==', sUser));
         const recipientQuery = query(this.userCollection, where('name', '==', rUser));
@@ -150,16 +150,16 @@ export class FirebaseService {
         const recipientRequests = doc(this.userCollection, recipientID)
 
         const thisVeryMoment = Timestamp.fromDate(new Date());
-        
-        try{
+
+        try {
             await updateDoc(senderRequests, {
                 requests: arrayUnion({
                     name: rUser,
                     isSender: true,
                     timestamp: thisVeryMoment,
-                  }),
-              })
-            
+                }),
+            })
+
             await updateDoc(recipientRequests, {
                 requests: arrayUnion({
                     name: sUser,
@@ -167,6 +167,6 @@ export class FirebaseService {
                     timestamp: thisVeryMoment,
                 })
             })
-        }catch(error){console.error(error)}
+        } catch (error) { console.error(error) }
     }
 }
