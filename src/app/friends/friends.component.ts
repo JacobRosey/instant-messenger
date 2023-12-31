@@ -29,13 +29,40 @@ export class FriendsComponent implements OnInit {
 
   async addFriend(name: string){
     const userExists = await this.fs.doesUserExist(name);
+    let canAddUser : boolean = true;
+    
     if(userExists){
       if(this.userData.name.toLowerCase() == name){
         alert("Did you really just try to add yourself as a friend?")
-        return;
+        canAddUser = false;
       }
-      await this.fs.addFriend(this.userData.name.toLowerCase(), name)
+      if(this.userData.friends.length){
+        this.userData.friends.forEach((f) => {
+          if(name.toLowerCase() == f.toLowerCase()){
+            alert(`${name} is already on your friends list!`)
+            canAddUser = false;
+          }
+        })
+      }
+      if(this.userData.requests.length){
+        this.userData.requests.forEach((r)=>{
+          if(r.name.toLowerCase() == name.toLowerCase()){
+            if(r.isPending){
+              alert(`You already have a pending friend request for ${name}`)
+            } else{
+              alert(`${name} denied your previous friend request.`)
+            }
+            canAddUser = false;
+          }
+        })
+      }
+      if(canAddUser){
+        const friendAdded = await this.fs.addFriend(this.userData.name.toLowerCase(), name)
+        alert(friendAdded ? `Sent friend request to ${name}!` : `Failed to send friend request to ${name}. Please try again`);
+      }
+    } else{
+      alert("Could not find a user with that name. Please try again");
+      return;
     }
-    alert("Just tried adding friend")
 }
 }

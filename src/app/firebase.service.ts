@@ -157,6 +157,7 @@ export class FirebaseService {
                     name: rUser,
                     isSender: true,
                     timestamp: thisVeryMoment,
+                    isPending: true
                 }),
             })
 
@@ -165,8 +166,13 @@ export class FirebaseService {
                     name: sUser,
                     isSender: false,
                     timestamp: thisVeryMoment,
+                    isPending: true
                 })
             })
-        } catch (error) { console.error(error) }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+        return true;
     }
 }

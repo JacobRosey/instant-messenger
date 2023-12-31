@@ -11,6 +11,7 @@ export interface Request {
   isSender: boolean,
   name: string,
   timestamp: any
+  isPending: boolean
 }
 
 export interface UserData {
