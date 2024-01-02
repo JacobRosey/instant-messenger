@@ -24,7 +24,7 @@
                                     <time>{{data.timestamp}}</time>
                                 </p>
                             </div>
-                            <div *ngIf="this.conversationsCollapsed[i];then expanded else collapsed"></div>
+                            <div *ngIf="this.conversationsCollapsed[i]; then expanded else collapsed"></div>
                             <ng-template #expanded>
                                 <svg *ngIf="first" (click)="toggleConversationView(i)" class="ml-24"
                                     style="cursor:pointer;" xmlns="http://www.w3.org/2000/svg" height="12" width="12"
@@ -56,23 +56,41 @@
                             <div id="dropdownComment1" id="{{'dropdownComment' + i + j}}"
                                 [class.hidden]="!commentDropdownStates[i]?.[j]"
                                 class="absolute mt-20 top-100 right-5 z-0 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
-                                    aria-labelledby="dropdownMenuIconHorizontalButton">
-                                    <li>
-                                        <a class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            style="color: lime;">Edit</a>
-                                    </li>
-                                    <li>
-                                        <a (click)="deleteComment(i, j)"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            style="color: crimson;">Delete</a>
-                                    </li>
-                                    <li>
-                                        <a (click)="toggleCommentDropdown(i, j)"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            style="color: white;">Cancel</a>
-                                    </li>
-                                </ul>
+                                <div *ngIf="checkIsSender(i, j); then isSender else notSender"></div>
+                                <ng-template #isSender>
+                                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
+                                        aria-labelledby="dropdownMenuIconHorizontalButton">
+                                        <li>
+                                            <a class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                                style="color: lime;">Edit</a>
+                                        </li>
+                                        <li>
+                                            <a (click)="deleteComment(i, j)"
+                                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                                style="color: crimson;" #notSender>Delete</a>
+                                        </li>
+                                        <li>
+                                            <a (click)="toggleCommentDropdown(i, j)"
+                                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                                style="color: white;">Cancel</a>
+                                        </li>
+                                    </ul>
+                                </ng-template>
+                                <ng-template #notSender>
+                                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
+                                        aria-labelledby="dropdownMenuIconHorizontalButton">
+                                        <li>
+                                            <a (click)="deleteComment(i, j)"
+                                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                                style="color: crimson;">Delete</a>
+                                        </li>
+                                        <li>
+                                            <a (click)="toggleCommentDropdown(i, j)"
+                                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                                style="color: white;">Cancel</a>
+                                        </li>
+                                    </ul>
+                                </ng-template>
                             </div>
                         </footer>
                         <div class="flex text-white ml-40 mt-8 font-bold underline" style="cursor:pointer;"
@@ -94,6 +112,19 @@
                                             d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
                                     </svg>
                                     Reply
+                                </button>
+                            </div>
+                            <div *ngIf="this.userData.name == data.sender">
+                                <button type="button"
+                                    class="flex float-right text-xs text-gray-500 dark:text-gray-400">
+                                    
+                                    <div *ngIf="groupedMessages[i][j].isRead; then read else delivered"></div>
+                                    <ng-template #read>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="12" width="20" fill="#999" viewBox="64 -72 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+                                        Read</ng-template>
+                                    <ng-template #delivered>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="12" width="20" fill="#999" viewBox="64 -72 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M64 112c-8.8 0-16 7.2-16 16v22.1L220.5 291.7c20.7 17 50.4 17 71.1 0L464 150.1V128c0-8.8-7.2-16-16-16H64zM48 212.2V384c0 8.8 7.2 16 16 16H448c8.8 0 16-7.2 16-16V212.2L322 328.8c-38.4 31.5-93.7 31.5-132 0L48 212.2zM0 128C0 92.7 28.7 64 64 64H448c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"/></svg>
+                                        Delivered</ng-template>
                                 </button>
                             </div>
                             <form *ngIf="last" class="mt-6">
@@ -160,7 +191,8 @@
                     class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
                     Your inbox is empty!</h1>
                 <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
-                    Use the input field below to add a friend by their username! If you believe you've reached this page in error, please refresh the page and try again.</p>
+                    Use the input field below to add a friend by their username! If you believe you've reached this page
+                    in error, please refresh the page and try again.</p>
             </div>
             <div class="lg:mt-0 lg:col-span-5 m-auto h-48 w-48 lg:flex">
                 <img src="https://cdn-icons-png.flaticon.com/128/11696/11696729.png" alt="mockup">
@@ -168,12 +200,12 @@
         </div>
 
         <div class="flex mb-6 w-[50%] m-auto">
-            <input type="text" id="success"
-                class="text-white text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700"
+            <input type="text" id="success" class="text-white text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700"
                 placeholder="Friend Name" #newFriendName>
-                <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button" class="w-48 ml-4 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Add Friend
-                </button>
+            <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button"
+                class="w-48 ml-4 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Add Friend
+            </button>
         </div>
     </section>
 </section>

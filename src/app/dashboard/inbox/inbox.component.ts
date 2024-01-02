@@ -153,6 +153,10 @@ export class InboxComponent implements OnInit {
     console.log(`fixin to delete ${JSON.stringify(this.groupedMessages[i][j])}`)
   }
 
+  checkIsSender(i: number, j: number): boolean {    
+    return this.groupedMessages[i][j].sender == this.userData.name;
+  }
+
   async onLogout() {
     await this.fs.deleteStoredUserData();
   }
