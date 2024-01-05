@@ -46,6 +46,10 @@ export class FriendsComponent implements OnInit {
     const userExists = await this.fs.doesUserExist(name);
     let canAddUser: boolean = true;
 
+    if(!name.length){
+      return alert("Please enter a username")
+    }
+
     if (userExists) {
       if (this.userData.name.toLowerCase() == name) {
         alert("Did you really just try to add yourself as a friend?")

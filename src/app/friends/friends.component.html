@@ -1,54 +1,56 @@
 <app-navbar></app-navbar>
-<section class="dark:bg-gray-900 flex lg:w-[-75%] xl:w-[-80%] 2xl:w-[-85%]">
-    <section>
-        <div *ngIf="hasRequests" class="text-white break-after ">
-            <div *ngFor="let req of pendingRequests, index as i">
-                <div class="container mx-auto my-8 px-4 md:px-12">
-                    <div class="flex flex-wrap -mx-1 lg:-mx-4">
+<section
+    class="content bg-gray-900 antialiased transition duration-300 lg:w-[75%] xl:w-[80%] 2xl:w-[85%] h-full text-white">
+    <div class="flex justify-between items-center bg-gray-900 pt-16">
+        <h2
+            class="text-lg lg:text-2xl font-bold rounded-xl px-14 py-3 bg-gray-800 m-auto text-gray-200 dark:text-white">
+            Friends</h2>
+    </div>
+    <p class="text-white bg-gray-900 text-center text-lg font-extrabold pt-12">Add Friend</p>
+    <div class="flex m-auto bg-gray-900 px-8 pb-16 text-white lg: px-24">
+        <input type="text" id="success"
+            class="text-sm rounded-lg mt-8 block w-full p-2.5 dark:bg-gray-700" placeholder="Friend's Username"
+            #newFriendName>
+        <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button"
+            class="w-48 ml-4 mt-8 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            Send Request
+        </button>
+    </div>
+    
+    <div *ngIf="hasRequests">
+        <section class="grid grid-flow-col auto-cols-[minmax(0, _5fr)] sm:grid-flow-col">
+        <div *ngFor="let req of pendingRequests, index as i">
+            <div class="container my-6 px-4 md:px-12">
+                    <div class="flex flex-wrap -mx-1 lg:-mx-4 w-96">
                         <div class="my-1 px-1 m-auto md:w-3/4 lg:my-4 lg:px-4">
                             <article class="overflow-hidden rounded-lg shadow-lg">
                                 <a href="#">
-                                    <img alt="Placeholder" class="block h-auto w-full"
+                                    <img alt="Placeholder" class="block h-auto w-auto"
                                         src="https://flowbite.com/docs/images/people/profile-picture-2.jpg">
                                 </a>
                                 <header class="flex items-center justify-between leading-tight p-2 md:p-4">
                                     <h1 class="text-lg">
                                         <span>
-                                            Friend Request
+                                            {{req.name}} 
                                         </span>
                                     </h1>
                                     <p class="text-sm">
-                                        {{req.timestamp}}
+                                        Received: {{req.timestamp}}
                                     </p>
                                 </header>
-                                <footer class="flex items-center justify-between leading-none p-2 md:p-4">
-                                    <div class="flex items-center">
-                                        <p class="ml-2 text-md">
-                                            {{req.name}}
-                                        </p>
-                                    </div>
-                                    <div class="flex m-auto justify-between hover:text-red-dark text-white">
-                                        <button class="rounded-md p-2 mr-2 bg-green-600"
+                                <footer class="flex items-center justify-center leading-none p-2 md:p-4">
+                                    <div class="flex justify-end hover:text-red-dark text-white">
+                                        <button class="rounded-md px-8 py-4 mr-2 bg-green-600"
                                             (click)="friendRequestResponse(i, true)">Accept</button>
-                                        <button class="rounded-md p-2 bg-red-600"
+                                        <button class="rounded-md px-8 bg-red-600"
                                             (click)="friendRequestResponse(i, false)">Decline</button>
                                     </div>
-
                                 </footer>
                             </article>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-        <div class="flex w-[75%] m-auto bg-gray-900">
-            <input type="text" id="success"
-                class="text-white text-sm rounded-lg mt-8 block w-full p-2.5 dark:bg-gray-700" placeholder="Friend Name"
-                #newFriendName>
-            <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button"
-                class="w-48 ml-4 mt-8 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                Add Friend
-            </button>
+        </section>
         </div>
 </section>
