@@ -37,7 +37,7 @@
                             d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z" />
                     </svg>
                     <span>Inbox</span>
-                    <div *ngIf="hasUnreadMessages"
+                    <div *ngIf="unreadMessages > 0"
                         style="margin-left: 4em; background-color: rgb(245, 58, 58); border-radius:1em; text-align: center; width:3em;">
                         {{unreadMessages}}</div>
                 </a>
@@ -96,7 +96,10 @@
 <div class="bg-gray-700 w-[100%]"> <!--Keep top Nav from moving on scroll here-->
     <div class="sticky z-10 top-0 h-16 border-b bg-white lg:py-2.5">
         <div class="px-6 flex items-center justify-between space-x-4 2xl:container">
-            <h5 hidden class="text-2xl text-gray-600 font-medium lg:block">{{this.currentRoute}}</h5>
+            <div hidden class="text-2xl text-gray-600 font-medium lg:flex">
+                <img src="assets/images/cipherchatlogo-notext.png" alt="logo" class="h-12 w-12 -ml-4">
+                <h1 class="mt-5">cipherchat</h1>
+            </div>
             <button (click)="toggleNavDropdown()" class="w-12 h-16 -mr-2 border-r lg:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 my-auto" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -114,35 +117,84 @@
                         </svg>
                     </a>
                 </button>
-                <button aria-label="chat"
+                <button aria-label="inbox"
                     class="w-10 h-10 rounded-xl border bg-gray-100 focus:bg-gray-100 active:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-auto text-gray-600" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                    </svg>
+                    <a href="/inbox">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-auto text-gray-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                        </svg>
+                    </a>
                 </button>
-                <button aria-label="notification"
-                    class="w-10 h-10 rounded-xl border bg-gray-100 focus:bg-gray-100 active:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-auto text-gray-600" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path
-                            d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                    </svg>
-                </button>
+                <div *ngIf="unreadMessages + pendingRequests > 0; then notifications else basic"></div>
+                <ng-template #notifications>
+                    <button aria-label="notification"
+                        class="relative w-10 h-10 rounded-xl border bg-gray-100 focus:bg-gray-100 active:bg-gray-200"
+                        (click)="toggleNotiDropdown()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-auto text-gray-600" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path
+                                d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                        </svg>
+
+                        <p class="absolute top-6 right-2 w-2 h-2 bg-red-600 rounded-full"></p>
+
+                    </button>
+                    <div class="absolute w-40 right-3.5 mt-12 bg-white border rounded-md shadow-md z-10 text-sm text-center"
+                        [class.hidden]="!notiDropdownVisible">
+                        <div
+                            class="absolute z-20 -top-2 right-5 w-0 h-0 border-x-8 border-x-transparent border-b-8 border-b-gray-500">
+                        </div>
+                        <div *ngIf="unreadMessages > 0">
+                            <div *ngIf="unreadMessages > 1">
+                                <a href="/inbox" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">{{unreadMessages}} new messages</a>
+                            </div>
+                            <div *ngIf="unreadMessages == 1">
+                                <a href="/inbox" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">1 message</a>
+                            </div>
+                        </div>
+                        <hr>
+                        <div *ngIf="pendingRequests > 0">
+                            <div *ngIf="pendingRequests > 1">
+                                <a href="/friends" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">{{pendingRequests}} friend
+                                    requests
+                                </a>
+                            </div>
+                            <div *ngIf="pendingRequests == 1">
+                                <a href="/friends" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">1 friend
+                                    request
+                                </a>
+
+                            </div>
+                            
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template #basic>
+                    <button aria-label="notification"
+                        class="relative w-10 h-10 rounded-xl border bg-gray-100 focus:bg-gray-100 active:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-auto text-gray-600" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path
+                                d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                        </svg>
+                    </button>
+                </ng-template>
             </div>
         </div>
     </div>
 
     <div *ngIf="navDropdownVisible" class="bg-gray-700">
-        <div >
+        <div>
             <div class="text-center">
                 <img src="https://tailus.io/sources/blocks/stats-cards/preview/images/second_user.webp" alt=""
-                  class="w-20 h-20 rounded-full m-auto mt-8 object-cover">
-                <h5 class="text-black font-semibold text-white lg:block"><span *ngIf="isLoading">Loading...</span>{{userData.name}}</h5>
+                    class="w-20 h-20 rounded-full m-auto mt-8 object-cover">
+                <h5 class="text-black font-semibold text-white lg:block"><span
+                        *ngIf="isLoading">Loading...</span>{{userData.name}}</h5>
                 <span class="hidden text-white lg:block">Admin</span>
-              </div>
-              
+            </div>
+
 
             <div class="flex flex-col">
                 <ul class="inline-block justify-start space-y-2 tracking-wide mt-8 text-white">
@@ -173,7 +225,7 @@
                                     d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z" />
                             </svg>
                             <span>Inbox</span>
-                            <div *ngIf="hasUnreadMessages" class="float-right"
+                            <div *ngIf="unreadMessages > 0" class="float-right"
                                 style="background-color: rgb(245, 58, 58); border-radius:1em; text-align: center; width:1.5em;">
                                 {{unreadMessages}}</div>
                         </a>
@@ -213,7 +265,7 @@
                                 <path class="fill-current text-gray-400 group-hover:text-cyan-600" fill-rule="evenodd"
                                     d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
                                     clip-rule="evenodd" />
-                            </svg> 
+                            </svg>
                             <span>Finance</span>
                         </a>
                     </li>
@@ -223,17 +275,17 @@
 
         <div (click)="onLogout()" class="pt-4 pb-4 ml-[-4%] flex items-center justify-center border-t">
             <button class="px-4 py-3 flex items-center space-x-4 rounded-md group">
-              <svg  xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path class="text-gray-300 group-hover:text-cyan-600" stroke-linecap="round" stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              <a href="/login">
-                <span class="text-white">Logout</span>
-              </a>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path class="text-gray-300 group-hover:text-cyan-600" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <a href="/login">
+                    <span class="text-white">Logout</span>
+                </a>
             </button>
-          </div>
-          
+        </div>
+
 
     </div>

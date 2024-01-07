@@ -7,22 +7,21 @@
             Friends</h2>
     </div>
     <p class="text-white bg-gray-900 text-center text-lg font-extrabold pt-12">Add Friend</p>
-    <div class="flex m-auto bg-gray-900 px-8 pb-16 text-white lg: px-24">
-        <input type="text" id="success"
-            class="text-sm rounded-lg mt-8 block w-full p-2.5 dark:bg-gray-700" placeholder="Friend's Username"
-            #newFriendName>
+    <div class="flex m-auto bg-gray-900 px-8 pb-16 text-white md:px-48 lg:px-24 xl:px-32">
+        <input type="text" id="success" class="text-sm rounded-lg mt-8 m-auto block w-full p-2.5 dark:bg-gray-700"
+            placeholder="Friend's Username" #newFriendName>
         <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button"
-            class="w-48 ml-4 mt-8 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            class="w-48 ml-4 mt-8 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center bg-blue-700 rounded-lg min-w-40 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Send Request
         </button>
     </div>
-    
+
     <div *ngIf="hasRequests">
-        <section class="grid grid-flow-col auto-cols-[minmax(0, _5fr)] sm:grid-flow-col">
-        <div *ngFor="let req of pendingRequests, index as i">
-            <div class="container my-6 px-4 md:px-12">
-                    <div class="flex flex-wrap -mx-1 lg:-mx-4 w-96">
-                        <div class="my-1 px-1 m-auto md:w-3/4 lg:my-4 lg:px-4">
+        <section class="grid grid-cols-[repeat(auto-fill,minmax(450px,1fr))]">
+            <div *ngFor="let req of pendingRequests, index as i">
+                <div class="container my-6 px-4 m-auto">
+                    <div class="flex flex-wrap -mx-1 justify-center lg:-mx-4">
+                        <div class="my-1 px-1 md:w-3/4 lg:my-4 lg:px-4">
                             <article class="overflow-hidden rounded-lg shadow-lg">
                                 <a href="#">
                                     <img alt="Placeholder" class="block h-auto w-auto"
@@ -31,7 +30,7 @@
                                 <header class="flex items-center justify-between leading-tight p-2 md:p-4">
                                     <h1 class="text-lg">
                                         <span>
-                                            {{req.name}} 
+                                            {{req.name}}
                                         </span>
                                     </h1>
                                     <p class="text-sm">
@@ -52,5 +51,13 @@
                 </div>
             </div>
         </section>
+    </div>
+    <div *ngIf="!hasRequests">
+        <div class="container mt-8 h-[50vh] flex justify-center m-auto font-bold">
+            <h1>
+                You currently have no pending friend requests
+            </h1>
         </div>
+
+    </div>
 </section>

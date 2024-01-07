@@ -201,24 +201,24 @@
     </section>
     <section *ngIf="!hasMessages && !hasFriends" class="bg-white dark:bg-gray-900 ml-8" style="height: 100vh;">
         <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-            <div class="mr-auto place-self-center lg:col-span-7">
+            <div class="m-auto place-self-center lg:col-span-7">
                 <h1
                     class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
                     Your inbox is empty!</h1>
                 <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
                     Use the input field below to add a friend by their username! If you believe you've reached this page
-                    in error, please refresh the page and try again.</p>
+                    in error, please refresh and try again.</p>
             </div>
             <div class="lg:mt-0 lg:col-span-5 m-auto h-48 w-48 lg:flex">
                 <img src="https://cdn-icons-png.flaticon.com/128/11696/11696729.png" alt="mockup">
             </div>
         </div>
 
-        <div class="flex mb-6 w-[50%] m-auto">
-            <input type="text" id="success" class="text-white text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700"
+        <div class="flex mb-6 m-auto justify-center">
+            <input type="text" id="success" class="w-64 text-white text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700"
                 placeholder="Friend Name" #newFriendName>
             <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button"
-                class="w-48 ml-4 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                class="min-w-40 ml-4 inline-flex items-center justify-center px-8 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 Add Friend
             </button>
         </div>

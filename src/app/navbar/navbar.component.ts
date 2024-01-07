@@ -10,13 +10,15 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
   userData: UserData = {name: '', friends: [], messages: [], requests: [] };
+  currentRoute: string = ''
+  unreadMessages: number  = 0;
+  pendingRequests: number = 0;
   isLoading: boolean = true;
-  unreadMessages : number  = 0;
-  hasUnreadMessages: boolean = false;
+  isDropdownAnimating: boolean = false;
   navDropdownVisible: boolean = false;
   rememberNavDropdown: boolean = false;
-  currentRoute: string = ''
-  isDropdownAnimating: boolean = false;
+  notiDropdownVisible: boolean = false;
+  
 
   constructor(private fs: FirebaseService, private router: Router) {}
 
@@ -67,11 +69,15 @@ export class NavbarComponent implements OnInit {
     //as messages get read
     this.unreadMessages = this.userData.messages.filter(message => !message.isRead && 
       (message.sender.toLowerCase() !== this.userData.name.toLowerCase())).length;
-    this.hasUnreadMessages = this.unreadMessages ? true : false;
+    this.pendingRequests = this.userData.requests.filter(req => req.isPending && !req.isSender).length
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1)
   }
   async onLogout(){
     await this.fs.deleteStoredUserData();
+  }
+
+  toggleNotiDropdown(){
+    this.notiDropdownVisible = !this.notiDropdownVisible
   }
 
 }
