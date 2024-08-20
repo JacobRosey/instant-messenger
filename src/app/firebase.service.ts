@@ -8,6 +8,12 @@ import { CookieService } from "ngx-cookie-service";
 export class FirebaseService {
     constructor(private db: Firestore, private cookies: CookieService) { }
 
+    //I need to change cookies to a cache (make it its own service) because cookies has a 4mb size limit.
+    //Make cache a Map of type userdata
+    //Import cache to every component to automatically populate userData without querying database
+    //Save cache to localstorage for persistence across sessions/refreshes
+    
+
     userCollection = collection(this.db, 'users');
     userExists: boolean = false;
     isValidated: boolean = false;
@@ -104,31 +110,62 @@ export class FirebaseService {
         const userQuery = query(this.userCollection, where('name', '==', n));
         try {
             const querySnapshot = await getDocs(userQuery);
-            for (const u of querySnapshot.docs) {
-                this.currentUserData = {
-                    name: n,
-                    friends: u.data()['friends'],
-                    messages: u.data()['messages'],
-                    requests: u.data()['requests']
-                }
+            if (querySnapshot.empty) {
+                console.error("No user data found for name:", n);
+                return null;
             }
-            console.log(this.currentUserData)
+            const u = querySnapshot.docs[0];
+            this.currentUserData = {
+                name: n,
+                friends: u.data()['friends'] || [],
+                messages: u.data()['messages'] || [],
+                requests: u.data()['requests'] || []
+            };
+
+            console.log(this.currentUserData);
+
+            try {
+                console.log('Setting cookie for user data:', this.currentUserData);
+
+                if (this.currentUserData) {
+                    this.cookies.set('storedUserData', JSON.stringify(this.currentUserData), {
+                        path: '/',
+                        secure: false
+                    });
+                    console.log('about to log the storedUserData cache')
+                } else {
+                    console.error("No valid user data found, cookie not set.");
+                }
+            } catch (error) {
+                console.error("Error occurred while setting cookie:", error);
+            }
+
+
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
-        this.cookies.set('storedUserData', JSON.stringify(this.currentUserData));
         return this.currentUserData;
     }
 
+
     async getStoredUserData() {
+        const cookieExists = this.cookies.check('storedUserData');
         const storedUserData = this.cookies.get('storedUserData');
-        if (storedUserData) {
-            this.currentUserData = JSON.parse(storedUserData);
+
+        if (cookieExists) {
+            try {
+                this.currentUserData = JSON.parse(storedUserData);
+                console.log("Parsed user data:", this.currentUserData);
+            } catch (error) {
+                console.error("Error parsing storedUserData:", error);
+            }
         } else {
-            console.log("error")
+            console.log("error: Cookie does not exist.");
         }
+
         return this.currentUserData;
     }
+
 
     async deleteStoredUserData() {
         this.cookies.delete('storedUserData')
