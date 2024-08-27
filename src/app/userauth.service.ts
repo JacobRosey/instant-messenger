@@ -13,30 +13,33 @@ export class UserAuthService {
         //First check if username exists in db
         const userExists = await this.fs.doesUserExist(u.username); 
     
-        if(userExists){
-            const isValidated = await this.fs.validateLogin(u);
-            if(isValidated){
-                await this.fs.getUserData(u.username);
-                this.router.navigateByUrl('/dashboard')
-            }
-        } else{
+        if(!userExists){
             alert("User not found");
             this.router.navigateByUrl('/login');
-        }
+            return;
+        } 
+        const isValidated = await this.fs.validateLogin(u);
+        if(isValidated){
+            await this.fs.getUserData(u.username);
+            this.router.navigateByUrl('/dashboard')
+            return;
+        } 
+        alert("Invalid password")
+        
     }
 
     async onRegister(u: User) {
         //Query db to see if username is taken
         const userNameTaken = await this.fs.doesUserExist(u.username); 
-        if(!userNameTaken){
-            try{
-                await this.fs.addNewUser(u);
-                alert("Registration successful!");
-                this.router.navigateByUrl('/login');
-            }
-            catch(error){console.error(error)}
-        } else {
+        if(userNameTaken){
             alert(`${u.username} is not available :L`);
+            return;
         }
+        try{
+            await this.fs.addNewUser(u);
+            alert("Registration successful!");
+            this.router.navigateByUrl('/login');
+        }
+        catch(error){console.error(error)}
     }
 }

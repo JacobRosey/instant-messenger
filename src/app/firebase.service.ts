@@ -2,17 +2,10 @@ import { Firestore, collection, query, where, getDocs, addDoc, doc, getDoc, Time
 import { User } from "./user.model";
 import { Injectable } from "@angular/core";
 import { UserData, Message } from "./dashboard/userdata.interface";
-import { CookieService } from "ngx-cookie-service";
 
 @Injectable()
 export class FirebaseService {
-    constructor(private db: Firestore, private cookies: CookieService) { }
-
-    //I need to change cookies to a cache (make it its own service) because cookies has a 4mb size limit.
-    //Make cache a Map of type userdata
-    //Import cache to every component to automatically populate userData without querying database
-    //Save cache to localstorage for persistence across sessions/refreshes
-    
+    constructor(private db: Firestore) { }
 
     userCollection = collection(this.db, 'users');
     userExists: boolean = false;
@@ -33,8 +26,7 @@ export class FirebaseService {
         try {
             const querySnapshot = await getDocs(userQuery);
             for (const u of querySnapshot.docs) {
-                const usernameMatch = username === u.data()['name'];
-                if (usernameMatch) {
+                if (username === u.data()['name']) {
                     this.userExists = true;
                     break;
                 }
@@ -42,7 +34,7 @@ export class FirebaseService {
         } catch (error) {
             console.error("Error fetching user data: ", error);
         }
-        // If user not found
+        // can or cannot register this username / valid or invalid username is attempting login
         return this.userExists;
     }
 
@@ -72,27 +64,26 @@ export class FirebaseService {
 
         const thisVeryMoment = Timestamp.fromDate(new Date());
 
+        const thisMsg : Message = {
+            isRead : false, 
+            timestamp : thisVeryMoment, 
+            content : t,
+            sender : s,
+            recipient: r
+        };
+
         try {
             await updateDoc(recipientMessages, {
-                messages: arrayUnion({
-                    sender: s,
-                    recipient: r,
-                    content: t,
-                    isRead: false,
-                    timestamp: thisVeryMoment,
-                }),
+                messages: arrayUnion(thisMsg),
             })
 
             await updateDoc(senderMessages, {
-                messages: arrayUnion({
-                    sender: s,
-                    recipient: r,
-                    content: t,
-                    isRead: false,
-                    timestamp: thisVeryMoment,
-                })
+                messages: arrayUnion(thisMsg)
             })
-        } catch (error) { console.error(error) }
+        } catch (error) { return console.error(error);}
+
+        this.currentUserData.messages.push(thisMsg)
+        this.updateStoredUserData();
     }
 
     async validateLogin(user: User) {
@@ -106,6 +97,7 @@ export class FirebaseService {
         return this.isValidated;
     }
 
+    //Only used on initial login or when checking for updates (new messages, requests etc)
     async getUserData(n: string) {
         const userQuery = query(this.userCollection, where('name', '==', n));
         try {
@@ -121,54 +113,46 @@ export class FirebaseService {
                 messages: u.data()['messages'] || [],
                 requests: u.data()['requests'] || []
             };
-
-            console.log(this.currentUserData);
-
             try {
-                console.log('Setting cookie for user data:', this.currentUserData);
 
                 if (this.currentUserData) {
-                    this.cookies.set('storedUserData', JSON.stringify(this.currentUserData), {
-                        path: '/',
-                        secure: false
-                    });
-                    console.log('about to log the storedUserData cache')
+                    localStorage.setItem('storedUserData', JSON.stringify(this.currentUserData));
                 } else {
-                    console.error("No valid user data found, cookie not set.");
+                    console.error("No valid user data found, local storage not set.");
                 }
             } catch (error) {
-                console.error("Error occurred while setting cookie:", error);
+                console.error("Error occurred while setting local storage:", error);
             }
-
-
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
         return this.currentUserData;
     }
 
-
+    //Used to keep data across page refresh
     async getStoredUserData() {
-        const cookieExists = this.cookies.check('storedUserData');
-        const storedUserData = this.cookies.get('storedUserData');
+        const dataExists = localStorage.getItem('storedUserData');
 
-        if (cookieExists) {
+        if (dataExists) {
             try {
-                this.currentUserData = JSON.parse(storedUserData);
+                this.currentUserData = JSON.parse(dataExists);
                 console.log("Parsed user data:", this.currentUserData);
             } catch (error) {
                 console.error("Error parsing storedUserData:", error);
             }
         } else {
-            console.log("error: Cookie does not exist.");
+            console.log("error: No data in local storage.");
         }
 
         return this.currentUserData;
     }
 
+    updateStoredUserData(){
+    localStorage.setItem('storedUserData', JSON.stringify(this.currentUserData))
+    }
 
     async deleteStoredUserData() {
-        this.cookies.delete('storedUserData')
+        localStorage.clear();
     }
 
     //sender username, recipient username

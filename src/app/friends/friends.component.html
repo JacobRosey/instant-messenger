@@ -1,6 +1,5 @@
 <app-navbar></app-navbar>
-<section
-    class="content bg-gray-900 antialiased transition duration-300 lg:w-[75%] xl:w-[80%] 2xl:w-[85%] h-full text-white">
+<section class="content bg-gray-900 antialiased transition duration-300 lg:w-[75%] xl:w-[80%] 2xl:w-[85%] h-full text-white">
     <div class="flex justify-between items-center bg-gray-900 pt-16">
         <h2
             class="text-lg lg:text-2xl font-bold rounded-xl px-14 py-3 bg-gray-800 m-auto text-gray-200 dark:text-white">
@@ -11,12 +10,44 @@
         <input type="text" id="success" class="text-sm rounded-lg mt-8 m-auto block w-full p-2.5 dark:bg-gray-700"
             placeholder="Friend's Username" #newFriendName>
         <button (click)="addFriend(newFriendName.value.toLowerCase())" type="button"
-            class="w-48 ml-4 mt-8 inline-flex items-center px-8 py-2.5 text-sm font-medium text-center bg-blue-700 rounded-lg min-w-40 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            class="w-48 ml-4 mt-8 inline-flex items-center px-8 py-2.5 text-sm text-white font-medium text-center bg-blue-700 rounded-lg min-w-40 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Send Request
         </button>
     </div>
+    <p class="text-white bg-gray-900 text-center text-lg font-extrabold pt-12">Friends List</p>
+    <div class="flex m-auto bg-gray-900 px-8 pb-16 text-black md:px-48 lg:px-24 xl:px-32"
+        *ngFor="let friend of userData.friends">
+        <div class="container my-6 px-4 m-auto">
+            <div class="flex flex-wrap -mx-1 justify-center lg:-mx-4">
+                <div class="my-1 px-1 md:w-3/4 lg:my-4 lg:px-4">
+                    <article class="overflow-hidden rounded-lg shadow-lg">
+                        <a href="#">
+                            <img alt="Placeholder" class="block h-auto w-auto"
+                                src="https://flowbite.com/docs/images/people/profile-picture-2.jpg">
+                        </a>
+                        <header class="flex items-center text-center leading-tight p-2 md:p-4">
+                            <h1 class="text-lg text-white">
+                                <span>
+                                    {{friend}}
+                                </span>
+                            </h1>
+                        </header>
+                        <footer class="flex items-center justify-center leading-none p-2 md:p-4">
+                            <div class="flex justify-end hover:text-red-dark text-white">
+                                <button class="rounded-md px-8 py-4 mr-2 bg-blue-600" (click)="sendMessage(friend)">Send
+                                    Message</button>
+                                <button class="rounded-md px-8 bg-red-600" (click)="removeFriend(friend)">Remove
+                                    Friend</button>
+                            </div>
+                        </footer>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div *ngIf="hasRequests">
+        <p class="text-white bg-gray-900 text-center text-lg font-extrabold pt-12">Pending Friend Requests</p>
         <section class="grid grid-cols-[repeat(auto-fill,minmax(450px,1fr))]">
             <div *ngFor="let req of pendingRequests, index as i">
                 <div class="container my-6 px-4 m-auto">

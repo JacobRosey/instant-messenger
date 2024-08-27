@@ -30,8 +30,6 @@ export class FriendsComponent implements OnInit {
         }
       }
     }
-    
-    console.log(this.hasRequests, this.pendingRequests)
   }
 
   async getStoredUserData() {
@@ -42,7 +40,8 @@ export class FriendsComponent implements OnInit {
     };
   }
 
-  async addFriend(name: string) {
+  async addFriend(name: string) { //refactor this nested bullshit. also make copy/paste it into the inbox page 
+                                  //(for when a user has no friends)
     const userExists = await this.fs.doesUserExist(name);
     let canAddUser: boolean = true;
 
@@ -87,5 +86,13 @@ export class FriendsComponent implements OnInit {
   friendRequestResponse(i: number, accepted: boolean){
     alert(accepted ? `accepted request from ${this.pendingRequests[i].name}` : `declined request from ${this.pendingRequests[i].name}`)
 
+  }
+
+  sendMessage(name: string){
+    console.log(name)
+  }
+
+  removeFriend(name: string){
+    console.log(name)
   }
 }

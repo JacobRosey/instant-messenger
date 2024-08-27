@@ -15,10 +15,10 @@ export class DashboardComponent implements OnInit {
   constructor(private fs: FirebaseService) {}
 
   ngOnInit() {
-    this.getStoredUserData();
+    this.getUserData();
   }
 
-  async getStoredUserData(){
+  async getUserData(){
     try{
       this.userData = await this.fs.getStoredUserData();
     } catch(err){console.error(err)}

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserData, Message } from '../userdata.interface';
 import { FirebaseService } from 'src/app/firebase.service';
 
+
 @Component({
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
@@ -21,7 +22,7 @@ export class InboxComponent implements OnInit {
   replyTexts: Array<string> = [];
   conversationsCollapsed: boolean[] = [];
   hasFriends: boolean = false;
-  
+
 
   constructor(private fs: FirebaseService) { }
 
@@ -31,7 +32,7 @@ export class InboxComponent implements OnInit {
     await this.setTemplateValues();
     await this.sortMessages();
     await this.groupMessages();
-    for(let i=0; i<this.groupedMessages.length; i++){
+    for (let i = 0; i < this.groupedMessages.length; i++) {
       this.conversationsCollapsed[i] = false;
     }
     console.log(this.userData)
@@ -46,7 +47,7 @@ export class InboxComponent implements OnInit {
   }
 
   async setTemplateValues() {
-    this.unreadMessages = this.userData.messages.filter(message => (!message.isRead) && 
+    this.unreadMessages = this.userData.messages.filter(message => (!message.isRead) &&
       message.recipient.toLowerCase() == this.userData.name.toLowerCase()).length;
     this.hasMessages = this.userData.messages.length > 0 ? true : false;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
@@ -112,8 +113,8 @@ export class InboxComponent implements OnInit {
         this.groupedMessages.push([...currentGroup]);
       }
     });
-    for(let i=0; i<this.groupedMessages.length; i++){
-      this.groupedMessages[i].sort((a, b)=>{
+    for (let i = 0; i < this.groupedMessages.length; i++) {
+      this.groupedMessages[i].sort((a, b) => {
         return a.timestamp - b.timestamp
       })
       this.groupedMessages[i].forEach((msg) => {
@@ -122,38 +123,65 @@ export class InboxComponent implements OnInit {
     }
   }
 
-   //send message to user here
-   async sendMessage(i: number, j:number) {
+  //send message to user here
+  async sendMessage(i: number, j: number) {
     const text = this.replyTexts[i];
     const sender = this.userData.name;
     const recipient = this.groupedMessages[i][j].recipient == sender ? this.groupedMessages[i][j].sender : this.groupedMessages[i][j].recipient
     await this.fs.addMessage(sender.toLowerCase(), recipient.toLowerCase(), text)
-   }
 
-  toggleCommentDropdown(i: number, j: number){
+    const thisVeryMoment = new Date();
+    const formattedDate = thisVeryMoment.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true
+    })
+    const newMsg: Message = {
+      sender: sender,
+      recipient: recipient,
+      content: text,
+      isRead: false,
+      timestamp: formattedDate,
+    };
+
+    // Push the new message to the groupedMessages array
+    this.groupedMessages[i].push(newMsg);
+
+    // Scroll to the bottom of the conversation or perform any UI update as needed
+    this.scrollToReplyForm(i);
+
+    // Clear the input field
+    this.replyTexts[i] = '';
+  }
+
+  toggleCommentDropdown(i: number, j: number) {
     if (!this.commentDropdownStates[i]) {
       this.commentDropdownStates[i] = [];
     }
     this.commentDropdownStates[i][j] = !this.commentDropdownStates[i][j];
   }
 
-  scrollToReplyForm(i: number){
+  scrollToReplyForm(i: number) {
     const el = document.querySelectorAll('.replyForm')[i];
     el.scrollIntoView(true);
   }
 
   //Might just want to add isVisible property to message
-  toggleConversationView(i: number){
+  toggleConversationView(i: number) {
     this.conversationsCollapsed[i] = !this.conversationsCollapsed[i]
   }
 
-  async deleteComment(i: number, j: number){
+  async deleteComment(i: number, j: number) {
     //lowkey need message id's for this
     //Add id to the Message interface and just use the auto-generated doc id from firebase
     console.log(`fixin to delete ${JSON.stringify(this.groupedMessages[i][j])}`)
   }
 
-  checkIsSender(i: number, j: number): boolean {    
+  checkIsSender(i: number, j: number): boolean {
     return this.groupedMessages[i][j].sender == this.userData.name;
   }
 
@@ -161,18 +189,21 @@ export class InboxComponent implements OnInit {
     await this.fs.deleteStoredUserData();
   }
 
-  async addFriend(name: string){
-      const userExists = await this.fs.doesUserExist(name);
-      if(userExists){
-        if(this.userData.name.toLowerCase() == name){
-          alert("Did you really just try to add yourself as a friend?")
-          return;
-        }
-        await this.fs.addFriend(this.userData.name.toLowerCase(), name)
+  async addFriend(name: string) {
+    if (this.userData.friends.includes(name)) {
+      alert(`${name} is already on your friend's list`)
+    }
+    const userExists = await this.fs.doesUserExist(name);
+    if (userExists) {
+      if (this.userData.name.toLowerCase() == name) {
+        alert("Did you really just try to add yourself as a friend?")
+        return;
       }
+      await this.fs.addFriend(this.userData.name.toLowerCase(), name)
+    }
   }
 
-  testMsg(f: Object){
+  testMsg(f: Object) {
     console.log(f)
   }
 }
