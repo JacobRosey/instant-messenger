@@ -23,6 +23,10 @@ export class InboxComponent implements OnInit {
   conversationsCollapsed: boolean[] = [];
   hasFriends: boolean = false;
 
+  // For managing the edit state
+  editing = false;
+  editText: string = '';
+
 
   constructor(private fs: FirebaseService) { }
 
@@ -35,7 +39,6 @@ export class InboxComponent implements OnInit {
     for (let i = 0; i < this.groupedMessages.length; i++) {
       this.conversationsCollapsed[i] = false;
     }
-    console.log(this.userData)
   }
 
   async getStoredUserData() {
@@ -131,6 +134,7 @@ export class InboxComponent implements OnInit {
     await this.fs.addMessage(sender.toLowerCase(), recipient.toLowerCase(), text)
 
     const thisVeryMoment = new Date();
+    const msgID = localStorage.getItem('latestID') || '';
     const formattedDate = thisVeryMoment.toLocaleString('en-US', {
       year: 'numeric',
       month: 'numeric',
@@ -146,6 +150,7 @@ export class InboxComponent implements OnInit {
       content: text,
       isRead: false,
       timestamp: formattedDate,
+      id: msgID
     };
 
     // Push the new message to the groupedMessages array
@@ -156,6 +161,52 @@ export class InboxComponent implements OnInit {
 
     // Clear the input field
     this.replyTexts[i] = '';
+  }
+
+  // Object to save index to edit and store the original text during editing
+  editingIndex: { i: number, j: number } | null = null;
+  originalContent: { i: number, j: number, content: string } | null = null; 
+
+  // Method to start editing a message
+  startEdit(i: number, j: number): void {
+    this.originalContent = { i, j, content: this.groupedMessages[i][j].content };
+    this.editingIndex = { i, j };
+  }
+
+  // Method to save the edited content
+  saveText(i: number, j: number, event: Event): void {
+    const target = event.target as HTMLElement;
+    const newContent = target.innerText.trim(); // Get the new content
+    if (this.originalContent && newContent !== this.originalContent.content) {
+      this.groupedMessages[i][j].content = newContent; // Update the data model
+    }
+    this.exitEditMode();
+  }
+
+  // Method to cancel editing
+  cancelEdit(): void {
+    if (this.originalContent) {
+      const { i, j, content } = this.originalContent;
+      this.groupedMessages[i][j].content = content; // Restore the original content
+    }
+    this.exitEditMode();
+  }
+
+  // Exit edit mode
+  private exitEditMode(): void {
+    this.originalContent = null; // Clear the original content
+    this.editingIndex = null; // Exit edit mode
+  }
+
+  // Check if a message is being edited
+  isEditing(i: number, j: number): boolean {
+    return this.editingIndex?.i === i && this.editingIndex?.j === j;
+  }
+  
+  async deleteComment(i: number ,j: number) { 
+    const id = this.groupedMessages[i][j].id;
+    //delete comment of id from database, remove comment at i j from grouped messages arr
+    console.log(`fixin to delete ${id}`)
   }
 
   toggleCommentDropdown(i: number, j: number) {
@@ -173,12 +224,6 @@ export class InboxComponent implements OnInit {
   //Might just want to add isVisible property to message
   toggleConversationView(i: number) {
     this.conversationsCollapsed[i] = !this.conversationsCollapsed[i]
-  }
-
-  async deleteComment(i: number, j: number) {
-    //lowkey need message id's for this
-    //Add id to the Message interface and just use the auto-generated doc id from firebase
-    console.log(`fixin to delete ${JSON.stringify(this.groupedMessages[i][j])}`)
   }
 
   checkIsSender(i: number, j: number): boolean {

@@ -64,12 +64,17 @@ export class FirebaseService {
 
         const thisVeryMoment = Timestamp.fromDate(new Date());
 
+        const msgID = doc(this.userCollection).id
+
+        localStorage.setItem('latestID', msgID)
+
         const thisMsg : Message = {
             isRead : false, 
             timestamp : thisVeryMoment, 
             content : t,
             sender : s,
-            recipient: r
+            recipient: r,
+            id: msgID
         };
 
         try {

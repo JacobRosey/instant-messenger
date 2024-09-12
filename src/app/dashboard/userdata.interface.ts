@@ -4,7 +4,8 @@ export interface Message {
   content: string,
   sender: string,
   recipient: string,
-  timestamp: any
+  timestamp: any,
+  id: string
 }
 
 export interface Request {
