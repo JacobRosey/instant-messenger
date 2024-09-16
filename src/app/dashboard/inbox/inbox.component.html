@@ -54,7 +54,7 @@
                             </button>
                             <!-- Dropdown menu -->
                             <div id="dropdownComment1" id="{{'dropdownComment' + i + j}}"
-                                [class.hidden]="!commentDropdownStates[i]?.[j]"
+                                *ngIf="isDropdownActive(i, j)"
                                 class="absolute mt-20 top-100 right-5 z-0 w-18 bg-white divide-y divide-gray-100 rounded-md shadow-md dark:bg-gray-700 dark:divide-gray-600">
                                 <div *ngIf="checkIsSender(i, j); then isSender else notSender"></div>
                                 <ng-template #isSender>
@@ -75,14 +75,14 @@
                                             </li>
                                         </ng-template>
                                         <li>
-                                            <a (click)="deleteComment(i, j)"
+                                            <a (click)="deleteMessage(i, j)"
                                                 class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                                 style="color: crimson;">Delete</a>
                                         </li>
                                         <li>
-                                            <a (click)="toggleCommentDropdown(i, j)"
+                                            <a (click)="closeDropdowns()"
                                                 class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                                style="color: white;">Cancel</a>
+                                                style="color: black;">Cancel</a>
                                         </li>
                                     </ul>
                                 </ng-template>
@@ -90,14 +90,14 @@
                                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" style="cursor: pointer;"
                                         aria-labelledby="dropdownMenuIconHorizontalButton">
                                         <li>
-                                            <a (click)="deleteComment(i, j)"
+                                            <a (click)="deleteMessage(i, j)"
                                                 class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                                 style="color: crimson;">Delete</a>
                                         </li>
                                         <li>
-                                            <a (click)="toggleCommentDropdown(i, j)"
+                                            <a (click)="closeDropdowns()"
                                                 class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                                style="color: white;">Cancel</a>
+                                                style="color: black;">Cancel</a>
                                         </li>
                                     </ul>
                                 </ng-template>
@@ -108,24 +108,20 @@
                             {{this.groupedMessages[i].length}} Message(s)
                         </div>
                         <div *ngIf="!this.conversationsCollapsed[i]">
-                            <p class="text-gray-500 dark:text-gray-400" *ngIf="!isEditing(i, j)"
-                                (click)="!groupedMessages[i][j].isRead && startEdit(i, j)">{{data.content}}</p>
+                            <p class="text-gray-500 dark:text-gray-400" *ngIf="!isEditing(i, j)">{{data.content}}</p>
                             <!-- Display edit controls only if the message is in edit mode -->
                             <div *ngIf="isEditing(i, j)">
-                                <p class="text-gray-500 dark:text-gray-400" contenteditable="true"
-                                    (blur)="saveText(i, j, $event)" (keydown.enter)="saveText(i, j, $event)"
-                                    [innerText]="groupedMessages[i][j].content">
-                                </p>
+                                <textarea [(ngModel)]="groupedMessages[i][j].content" style="resize:none;"></textarea>
                                 <div class="flex justify-between p-2 gap-4">
                                     <button
-                                      class="flex-grow py-2 px-4 bg-green-300 text-white hover:bg-green-400 dark:hover:bg-green-500 border border-transparent rounded"
-                                      (click)="saveText(i, j, $event)">Save Edit
+                                        class="flex-grow py-2 px-4 bg-green-300 text-white hover:bg-green-400 dark:hover:bg-green-500 border border-transparent rounded"
+                                        (click)="saveEdit()">Save Edit
                                     </button>
                                     <button
-                                      class="flex-grow py-2 px-4 bg-red-300 text-white hover:bg-red-400 dark:hover:bg-red-500 border border-transparent rounded"
-                                      (click)="cancelEdit()">Cancel Edit
+                                        class="flex-grow py-2 px-4 bg-red-300 text-white hover:bg-red-400 dark:hover:bg-red-500 border border-transparent rounded"
+                                        (click)="cancelEdit()">Cancel Edit
                                     </button>
-                                  </div>                                                                    
+                                </div>
                             </div>
                             <div class="flex justify-end items-center mt-4 space-x-4" *ngIf="!checkIsSender(i,j)">
                                 <button type="button" (click)="scrollToReplyForm(i)"

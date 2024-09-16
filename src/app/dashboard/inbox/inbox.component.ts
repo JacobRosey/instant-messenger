@@ -6,7 +6,7 @@ import { FirebaseService } from 'src/app/firebase.service';
 @Component({
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
-  styleUrls: ['./inbox.component.scss']
+  styleUrls: ['./inbox.component.scss'],
 })
 
 export class InboxComponent implements OnInit {
@@ -18,7 +18,7 @@ export class InboxComponent implements OnInit {
   hasMessages: boolean = false;
   groupedMessages: Message[][] = [];
   savedMsgState: Message[][] = []
-  commentDropdownStates: boolean[][] = [];
+  activeDropdown: {i: number; j:number} | null = null
   replyTexts: Array<string> = [];
   conversationsCollapsed: boolean[] = [];
   hasFriends: boolean = false;
@@ -167,53 +167,71 @@ export class InboxComponent implements OnInit {
   editingIndex: { i: number, j: number } | null = null;
   originalContent: { i: number, j: number, content: string } | null = null; 
 
-  // Method to start editing a message
-  startEdit(i: number, j: number): void {
-    this.originalContent = { i, j, content: this.groupedMessages[i][j].content };
-    this.editingIndex = { i, j };
-  }
-
-  // Method to save the edited content
-  saveText(i: number, j: number, event: Event): void {
-    const target = event.target as HTMLElement;
-    const newContent = target.innerText.trim(); // Get the new content
-    if (this.originalContent && newContent !== this.originalContent.content) {
-      this.groupedMessages[i][j].content = newContent; // Update the data model
-    }
-    this.exitEditMode();
-  }
-
-  // Method to cancel editing
-  cancelEdit(): void {
-    if (this.originalContent) {
-      const { i, j, content } = this.originalContent;
-      this.groupedMessages[i][j].content = content; // Restore the original content
-    }
-    this.exitEditMode();
-  }
-
-  // Exit edit mode
-  private exitEditMode(): void {
-    this.originalContent = null; // Clear the original content
-    this.editingIndex = null; // Exit edit mode
-  }
-
-  // Check if a message is being edited
   isEditing(i: number, j: number): boolean {
     return this.editingIndex?.i === i && this.editingIndex?.j === j;
   }
-  
-  async deleteComment(i: number ,j: number) { 
-    const id = this.groupedMessages[i][j].id;
-    //delete comment of id from database, remove comment at i j from grouped messages arr
-    console.log(`fixin to delete ${id}`)
+
+  startEdit(i: number, j: number): void {
+    const ogMessage = this.groupedMessages[i][j].content
+    this.originalContent = {i: i, j: j, content: ogMessage};
+    this.editingIndex = { i, j };
+    this.closeDropdowns()
+  }
+
+  saveEdit(): void {
+    // Here, the two-way binding will automatically update groupedMessages
+    //TODO: update localstorage and post edited message to db
+    this.exitEditMode();
+  }
+
+  cancelEdit(): void {
+    if (this.editingIndex && this.originalContent !== null) {
+      const { i, j } = this.editingIndex;
+      this.groupedMessages[i][j].content = this.originalContent.content;
+    }
+    this.exitEditMode();
+  }
+
+  exitEditMode(): void {
+    this.editingIndex = null;
+    this.originalContent = null;
+  }
+
+  async deleteMessage(i: number ,j: number) {
+    if (confirm('Are you sure you want to delete this message?')) {
+      const id = this.groupedMessages[i][j].id;
+      //delete comment of id from database, remove comment at i j from grouped messages arr
+      alert(`Deleted message with id: ${id}`);
+
+    } else {
+      // Do nothing!
+      console.log('Thing was not saved to the database.');
+    } 
+    this.closeDropdowns()
   }
 
   toggleCommentDropdown(i: number, j: number) {
-    if (!this.commentDropdownStates[i]) {
-      this.commentDropdownStates[i] = [];
+    //cancel edit if edit was in progress
+    if(this.editingIndex != null){
+      this.cancelEdit()
     }
-    this.commentDropdownStates[i][j] = !this.commentDropdownStates[i][j];
+    // Check if the clicked dropdown is already active
+    if (this.activeDropdown && this.activeDropdown.i === i && this.activeDropdown.j === j) {
+      // If it is, close it
+      this.activeDropdown = null;
+    } else {
+      // Otherwise, set the clicked dropdown as active
+      this.activeDropdown = { i, j };
+    }
+  }
+
+  isDropdownActive(i: number, j: number): boolean {
+    return (this.activeDropdown != null) && (this.activeDropdown.i === i 
+    && this.activeDropdown.j === j);
+  }
+
+  closeDropdowns(){
+    this.activeDropdown = null
   }
 
   scrollToReplyForm(i: number) {
