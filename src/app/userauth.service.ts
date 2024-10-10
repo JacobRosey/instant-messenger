@@ -32,14 +32,14 @@ export class UserAuthService {
         //Query db to see if username is taken
         const userNameTaken = await this.fs.doesUserExist(u.username); 
         if(userNameTaken){
-            alert(`${u.username} is not available :L`);
-            return;
+            return -1;
         }
         try{
             await this.fs.addNewUser(u);
-            alert("Registration successful!");
-            this.router.navigateByUrl('/login');
+            return 0;
         }
         catch(error){console.error(error)}
+
+        return 1;
     }
 }

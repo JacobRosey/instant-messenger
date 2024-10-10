@@ -108,7 +108,7 @@
                             {{this.groupedMessages[i].length}} Message(s)
                         </div>
                         <div *ngIf="!this.conversationsCollapsed[i]">
-                            <p class="text-gray-500 dark:text-gray-400" *ngIf="!isEditing(i, j)">{{data.content}}</p>
+                            <p class="text-gray-500 dark:text-gray-400" *ngIf="!isEditing(i, j)" [attr.id]="'message-' + i + '-' + j">{{data.content}}</p>
                             <!-- Display edit controls only if the message is in edit mode -->
                             <div *ngIf="isEditing(i, j)">
                                 <textarea [(ngModel)]="groupedMessages[i][j].content" style="resize:none;"></textarea>

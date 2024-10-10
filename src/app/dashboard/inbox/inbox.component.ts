@@ -27,7 +27,6 @@ export class InboxComponent implements OnInit {
   editing = false;
   editText: string = '';
 
-
   constructor(private fs: FirebaseService) { }
 
   async ngOnInit() {
@@ -37,7 +36,7 @@ export class InboxComponent implements OnInit {
     await this.sortMessages();
     await this.groupMessages();
     for (let i = 0; i < this.groupedMessages.length; i++) {
-      this.conversationsCollapsed[i] = false;
+      this.conversationsCollapsed[i] = true;
     }
   }
 
@@ -55,7 +54,7 @@ export class InboxComponent implements OnInit {
     this.hasMessages = this.userData.messages.length > 0 ? true : false;
     this.hasUnreadMessages = this.unreadMessages ? true : false;
     this.userData.name = this.userData.name.charAt(0).toUpperCase() + this.userData.name.slice(1);
-    this.hasFriends = this.userData.friends.length > 0 ? true : false;
+    this.hasFriends = this.userData.friends.length ? true : false;
   }
 
   //Sort messages, capitalize first letter of username for rendering to html
@@ -156,7 +155,7 @@ export class InboxComponent implements OnInit {
     // Push the new message to the groupedMessages array
     this.groupedMessages[i].push(newMsg);
 
-    // Scroll to the bottom of the conversation or perform any UI update as needed
+    // Scroll to the bottom of the conversation
     this.scrollToReplyForm(i);
 
     // Clear the input field
@@ -166,19 +165,29 @@ export class InboxComponent implements OnInit {
   // Object to save index to edit and store the original text during editing
   editingIndex: { i: number, j: number } | null = null;
   originalContent: { i: number, j: number, content: string } | null = null; 
+  msgChanged: Boolean = false;
 
   isEditing(i: number, j: number): boolean {
     return this.editingIndex?.i === i && this.editingIndex?.j === j;
   }
 
   startEdit(i: number, j: number): void {
-    const ogMessage = this.groupedMessages[i][j].content
-    this.originalContent = {i: i, j: j, content: ogMessage};
+    this.originalContent = {i: i, j: j, content: this.groupedMessages[i][j].content};
     this.editingIndex = { i, j };
     this.closeDropdowns()
   }
 
-  saveEdit(): void {
+  saveEdit(): void { 
+    if (this.editingIndex && this.originalContent !== null) {
+      const { i, j } = this.editingIndex;
+      //make sure original message!=new message
+      if(this.originalContent?.content == this.groupedMessages[i][j].content){
+        return;
+      }
+      //re-encrypt and send to db
+      
+    }
+    
     // Here, the two-way binding will automatically update groupedMessages
     //TODO: update localstorage and post edited message to db
     this.exitEditMode();
@@ -202,11 +211,8 @@ export class InboxComponent implements OnInit {
       const id = this.groupedMessages[i][j].id;
       //delete comment of id from database, remove comment at i j from grouped messages arr
       alert(`Deleted message with id: ${id}`);
-
-    } else {
-      // Do nothing!
-      console.log('Thing was not saved to the database.');
-    } 
+    }  
+    // else do nothing  
     this.closeDropdowns()
   }
 
@@ -215,7 +221,7 @@ export class InboxComponent implements OnInit {
     if(this.editingIndex != null){
       this.cancelEdit()
     }
-    // Check if the clicked dropdown is already active
+    // Check if this dropdown is already active
     if (this.activeDropdown && this.activeDropdown.i === i && this.activeDropdown.j === j) {
       // If it is, close it
       this.activeDropdown = null;
@@ -239,7 +245,6 @@ export class InboxComponent implements OnInit {
     el.scrollIntoView(true);
   }
 
-  //Might just want to add isVisible property to message
   toggleConversationView(i: number) {
     this.conversationsCollapsed[i] = !this.conversationsCollapsed[i]
   }

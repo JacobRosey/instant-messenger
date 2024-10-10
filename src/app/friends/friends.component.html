@@ -18,10 +18,10 @@
     <div class="flex m-auto bg-gray-900 px-8 pb-16 text-black md:px-48 lg:px-24 xl:px-32"
         *ngFor="let friend of userData.friends">
         <div class="container my-6 px-4 m-auto">
-            <div class="flex flex-wrap -mx-1 justify-center lg:-mx-4">
+            <div class="flex flex-wrap -mx-1 justify-center lg:-mx-4 bg-slate-600 rounded-lg">
                 <div class="my-1 px-1 md:w-3/4 lg:my-4 lg:px-4">
                     <article class="overflow-hidden rounded-lg shadow-lg">
-                        <a href="#">
+                        <a target="blank">
                             <img alt="Placeholder" class="block h-auto w-auto"
                                 src="https://flowbite.com/docs/images/people/profile-picture-2.jpg">
                         </a>
@@ -34,8 +34,11 @@
                         </header>
                         <footer class="flex items-center justify-center leading-none p-2 md:p-4">
                             <div class="flex justify-end hover:text-red-dark text-white">
-                                <button class="rounded-md px-8 py-4 mr-2 bg-blue-600" (click)="sendMessage(friend)">Send
-                                    Message</button>
+                                <a href="/inbox" routerLink="/inbox">
+                                    <button class="rounded-md px-8 py-4 mr-2 bg-blue-600">Send
+                                        Message</button>
+                                </a>
+                                
                                 <button class="rounded-md px-8 bg-red-600" (click)="removeFriend(friend)">Remove
                                     Friend</button>
                             </div>
@@ -51,10 +54,10 @@
         <section class="grid grid-cols-[repeat(auto-fill,minmax(450px,1fr))]">
             <div *ngFor="let req of pendingRequests, index as i">
                 <div class="container my-6 px-4 m-auto">
-                    <div class="flex flex-wrap -mx-1 justify-center lg:-mx-4">
+                    <div class="flex flex-wrap -mx-1 justify-center lg:-mx-4 bg-slate-600 rounded-lg">
                         <div class="my-1 px-1 md:w-3/4 lg:my-4 lg:px-4">
                             <article class="overflow-hidden rounded-lg shadow-lg">
-                                <a href="#">
+                                <a target="blank">
                                     <img alt="Placeholder" class="block h-auto w-auto"
                                         src="https://flowbite.com/docs/images/people/profile-picture-2.jpg">
                                 </a>
