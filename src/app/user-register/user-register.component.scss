@@ -1,0 +1,19 @@
+.message-container {
+  height: 24px; /* Ensure consistent height */
+  display: flex;
+  align-items: left;
+  justify-content: left; /* Center the text */
+}
+
+.message-text {
+  font-weight: bold;
+  transition: color 0.3s ease; /* Smooth transition for color change */
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}

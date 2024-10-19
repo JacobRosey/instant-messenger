@@ -10,17 +10,15 @@ import { Router } from '@angular/router';
 })
 export class UserRegisterComponent implements OnInit {
 
-  constructor(private authServ: UserAuthService, private router: Router) { }
+  constructor(private userAuth: UserAuthService, private router: Router) { }
 
   ngOnInit(): void {
   }
-  success = false;
-  errorEncountered = false;
+
   errorText = ""
 
   //username, password, confirm password
   async onAttemptedRegistration(u: string, h: string, c: string) {
-    this.errorEncountered = false;
     if (((u && h) && (h && c) && (h === c))) {
       //Also not sure which of these could actually cause a problem, if any
       const forbiddenUsernames: Array<string> = ['null', 'undefined', 'NaN', 'true', 'false', 'this', 'new', 'var', 'let', 'const', 'class', 'function', 'return',
@@ -37,28 +35,22 @@ export class UserRegisterComponent implements OnInit {
         'dashboard', 'settings', 'profile', 'search', 'notifications', 'messages', 'status',
         'doctype', 'html', 'head', 'body', 'div', 'form', 'script', 'input', 'output', 'section', 'style', 'link', 'meta', 'api',
         'bot', 'ls', 'cd', 'chmod', 'mkdir', 'rmdir', 'rm', 'touch', 'echo', 'ping', 'kill', 'shutdown', '\0'];
-      
-      if (forbiddenUsernames.includes(u)) { 
-        this.errorEncountered = true;
-        this.errorText = "This site has zero users, you're wasting your time." 
+
+      if (forbiddenUsernames.includes(u)) {
+        this.errorText = "This site has zero users, you're wasting your time."
         return
       }
-      
+
       const myUser = new User(u, h);
-      let res = await this.authServ.onRegister(myUser);
-      if (res == 0) {
-        this.success = true;
+      let res = await this.userAuth.onRegister(myUser);
+      this.errorText = res.message;
+      if (res.success == true) {
         setTimeout(() => {
           this.router.navigateByUrl('/login');
         }, 1500);
-        return;
-
-      }
-      this.errorEncountered = true;
-      this.errorText = res == -1 ? "Sorry, that username is taken." : "Something went wrong. Please try again!"
-
+        return   
+      }  
     } else {
-      this.errorEncountered = true;
       this.errorText = "You missed a field or your passwords do not match."
     }
   }

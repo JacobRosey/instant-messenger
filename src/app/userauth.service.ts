@@ -1,45 +1,45 @@
-import { EventEmitter, Injectable } from "@angular/core";
-import { User } from "./user.model"; 
+import { Injectable } from "@angular/core";
+import { User, loginRes } from "./user.model"; 
 import { Router } from "@angular/router";
 import { FirebaseService } from "./firebase.service";
 
 @Injectable()
 export class UserAuthService {
-    loginAttempted = new EventEmitter<User>();
 
-    constructor(private router: Router, private fs: FirebaseService) {}
-
-    async onLogin(u: User) {
-        //First check if username exists in db
-        const userExists = await this.fs.doesUserExist(u.username); 
+    constructor(private fs: FirebaseService) {}
     
-        if(!userExists){
-            alert("User not found");
-            this.router.navigateByUrl('/login');
-            return;
-        } 
-        const isValidated = await this.fs.validateLogin(u);
-        if(isValidated){
+    async onLogin(u: User): Promise<loginRes> {
+        const userExists = await this.fs.doesUserExist(u.username);
+    
+        if (!userExists) {
+            return { success: false, message: "Username not found"};
+        }
+    
+        try {
+            const isValidated = await this.fs.validateLogin(u);
+            if (!isValidated) {
+                return { success: false, message: "Invalid username or password" };
+            }
+    
             await this.fs.getUserData(u.username);
-            this.router.navigateByUrl('/dashboard')
-            return;
-        } 
-        alert("Invalid password")
-        
+            return { success: true, message: "" };
+        } catch (error) {
+            return { success: false, message: `An error occurred: ${error}` };
+        }
     }
 
-    async onRegister(u: User) {
+    async onRegister(u: User): Promise<loginRes> {
         //Query db to see if username is taken
         const userNameTaken = await this.fs.doesUserExist(u.username); 
         if(userNameTaken){
-            return -1;
+            return { success: false, message: "Sorry, that username is taken"}; 
         }
         try{
             await this.fs.addNewUser(u);
-            return 0;
+            return { success: true, message: "Success! Redirecting to login page..."};
         }
-        catch(error){console.error(error)}
+        catch(error){ return {success: false, message: `An unhandled error occurred: ${error}`}};//probably don't want to render this error on screen 
 
-        return 1;
+        
     }
 }

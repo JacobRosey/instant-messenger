@@ -104,8 +104,11 @@
                             </div>
                         </footer>
                         <div class="flex text-black mt-8 justify-center font-bold underline" style="cursor:pointer;"
-                            *ngIf="this.conversationsCollapsed[i]" (click)="toggleConversationView(i)">View
-                            {{this.groupedMessages[i].length}} Message(s)
+                            *ngIf="this.conversationsCollapsed[i] && this.groupedMessages[i].length > 1" (click)="toggleConversationView(i)">View
+                            {{this.groupedMessages[i].length}} Messages
+                        </div>
+                        <div class="flex text-black mt-8 justify-center font-bold underline" style="cursor:pointer;"
+                            *ngIf="this.conversationsCollapsed[i] && this.groupedMessages[i].length == 1" (click)="toggleConversationView(i)">View Message
                         </div>
                         <div *ngIf="!this.conversationsCollapsed[i]">
                             <p class="text-gray-500 dark:text-gray-400" *ngIf="!isEditing(i, j)" [attr.id]="'message-' + i + '-' + j">{{data.content}}</p>

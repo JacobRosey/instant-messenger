@@ -1,0 +1,17 @@
+.error-container {
+    height: 24px; 
+    overflow: hidden; 
+  }
+  
+  .error-text {
+    visibility: hidden;  
+    opacity: 0;          
+    color: red;
+    font-weight: bold;
+    transition: opacity 0.3s ease;  
+  }
+  
+  .error-text.visible {
+    visibility: visible;
+    opacity: 1;
+  }

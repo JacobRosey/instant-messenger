@@ -7,3 +7,8 @@ export class User {
         this.hash = hash;
     }
 }
+
+export interface loginRes{
+    success: boolean;
+    message: string;
+}
